@@ -1,5 +1,5 @@
 
-namespace OOW {
+export namespace OOW {
 
     /**
      * error thrown when item missing in ServiceIndex or Namespace index
