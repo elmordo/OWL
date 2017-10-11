@@ -7,24 +7,28 @@ export namespace OOW {
 
         readonly rootElement: CommonHtmlElement;
 
-        private _cache: MappedElementCache;
+        private _cache: MappedNodeCache;
 
         constructor (window: Window, rootElement: HTMLElement) {
             this.window = window;
-            this.rootElement = this.mapElement(rootElement);
+            this.rootElement = <CommonHtmlElement>this.mapNode(rootElement);
         }
 
-        public createNewFragment(html: string) : CommonHtmlElement {
+        public createNewFragment(html: string) : CommonHtmlNode {
             let parser: DOMParser = new DOMParser();
             let fragment: DocumentFragment = parser.parseFromString(html, "text/xml");
-            let element: HTMLElement = <HTMLElement>fragment.firstChild;
+            let rootNode: Node = fragment.firstChild;
 
-            return this.mapElement(element);
+            return this.mapNode(rootNode);
         }
 
-        public mapElement(element:HTMLElement) : CommonHtmlElement {
+        public mapNode(node:Node) : CommonHtmlNode {
             // TODO: real mapping
-            return new CommonHtmlElement(element, this);
+            return new CommonHtmlNode(node, this);
+        }
+
+        get cache() : MappedNodeCache {
+            return this._cache;
         }
 
     }
@@ -39,22 +43,22 @@ export namespace OOW {
     /**
      * contains <cache id>-<mapped element> pairs
      */
-    class MappedElementLookup {
+    class MappedNodeLookup {
 
-        [key: number]: CommonHtmlElement;
+        [key: number]: CommonHtmlNode;
 
     }
 
     /**
      * hold already mapped elements
      */
-    class MappedElementCache {
+    class MappedNodeCache {
 
         /**
          * attribute name where OOW internal id is stored
          * @type {String}
          */
-        public static ELEMENT_INTERNAL_ID_NAME = "oow-id";
+        public static ATTR_WITH_HASH = "__oowId__";
 
         /**
          * id of next cached element
@@ -64,9 +68,9 @@ export namespace OOW {
 
         /**
          * container with cached elements
-         * @type {MappedElementLookup}
+         * @type {MappedNodeLookup}
          */
-        private _cache: MappedElementLookup;
+        private _cache: MappedNodeLookup;
 
         /**
          * parent document
@@ -78,87 +82,79 @@ export namespace OOW {
          * initialize instance
          */
         constructor(document: Document) {
-            this._cache = new MappedElementLookup();
+            this._cache = new MappedNodeLookup();
             this._document = document;
         }
 
         /**
-         * is element cached?
-         * @param {HTMLElement} element element to test
+         * is node cached?
+         * @param {Node} node node to test
          * @return {boolean} true if element is cached, false otherwise
          */
-        public isCached(element: HTMLElement) : boolean {
-            return this._hasElementId(element);
+        public isCached(node: Node) : boolean {
+            return this._hasNodeId(node);
         }
 
         /**
-         * add element to the cache
-         * @param {CommonHtmlElement} mappedElement mapped element to add
+         * add node to the cache
+         * @param {CommonHtmlNode} mappedNode mapped node to add
          */
-        public addElement(mappedElement: CommonHtmlElement) : void {
-            let id:number = this._setElementId(mappedElement.element);
-            this._cache[id] = mappedElement;
+        public addElement(mappedNode: CommonHtmlNode) : void {
+            let id:number = this._setNodeId(mappedNode.node);
+            this._cache[id] = mappedNode;
         }
 
         /**
-         * get mapped element from the cache
-         * @param {HTMLElement} element raw HTML element
-         * @return {CommonHtmlElement} cached element
-         * @throws Error element is not cached
+         * get mapped node from the cache
+         * @param {Node} node raw HTML node
+         * @return {CommonHtmlNode} cached mapped node
+         * @throws Error node is not cached
          */
-        public getCached(element: HTMLElement) : CommonHtmlElement {
-            let id: number = this._getElementId(element);
+        public getCached(node: Node) : CommonHtmlNode {
+            let id: number = this._getNodeId(node);
             return this._cache[id];
         }
 
         /**
-         * remove element from the cache
-         * @param {HTMLElement} element raw HTML element to remove
-         * @throws Error element is not in cache
+         * remove node from the cache
+         * @param {Node} node raw HTML node to remove
+         * @throws Error node is not in cache
          */
-        public removeElement(element: HTMLElement) : void {
-            let id: number = this._getElementId(element);
+        public removeNode(node: Node) : void {
+            let id: number = this._getNodeId(node);
             delete this._cache[id];
         }
 
         /**
-         * test if element has cache id
-         * @param {HTMLElement} element raw HTML element to test
-         * @return {boolean} true if element has cache id
+         * test if node has cache id
+         * @param {Node} node raw HTML node to test
+         * @return {boolean} true if node has cache id
          */
-        private _hasElementId(element: HTMLElement) : boolean {
-            return element.attributes.getNamedItem(MappedElementCache.ELEMENT_INTERNAL_ID_NAME) !== null;
+        private _hasNodeId(node: Node) : boolean {
+            return (<any>node)[MappedNodeCache.ATTR_WITH_HASH] !== undefined;
         }
 
         /**
-         * get element cache id
-         * @param {HTMLElement} element raw HTML element
-         * @return {number} element's cache id
-         * @throws Error element has no cache id
+         * get node cache id
+         * @param {Node} node raw HTML node
+         * @return {number} node's cache id
+         * @throws Error node has no cache id
          */
-        private _getElementId(element: HTMLElement) : number {
-            let attr: Attr = element.attributes.getNamedItem(MappedElementCache.ELEMENT_INTERNAL_ID_NAME);
-
-            if (attr === null) throw new Error("Element is not cached");
-
-            return Number(attr.value);
+        private _getNodeId(node: Node) : number {
+            let id = (<any>node)[MappedNodeCache.ATTR_WITH_HASH];
+            return Number(id);
         }
 
         /**
-         * set new cache id to the element
-         * @param {HTMLElement} element raw HTML element
+         * set new cache id to the node
+         * @param {Node} node raw HTML node
          * @return {number} new assigned cache id
          */
-        private _setElementId(element: HTMLElement) : number {
-            let id: number = MappedElementCache._nextId++;
-
-            let attr: Attr = this._document.createAttribute(MappedElementCache.ELEMENT_INTERNAL_ID_NAME);
-            attr.value = id.toString();
-            element.attributes.setNamedItem(attr);
-
+        private _setNodeId(node: Node) : number {
+            let id: number = MappedNodeCache._nextId++;
+            (<any>node)[MappedNodeCache.ATTR_WITH_HASH] = id;
             return id;
         }
-
     }
 
 
@@ -168,25 +164,64 @@ export namespace OOW {
 
     }
 
+    /**
+     * base of all nodes
+     */
     export class CommonHtmlNode {
 
+        /**
+         * wrapped node
+         * @type {Node}
+         */
         protected _node: Node;
 
+        /**
+         * source dom manipulator (creator of the instance)
+         * @type {DomManipulator}
+         */
         protected _domManipulator: DomManipulator;
 
+        /**
+         * create and initialize new instance
+         * @param {Node} node node to wrap
+         * @param {DomManipulator} manipulator creator of the instance
+         */
         constructor(node: Node, manipulator: DomManipulator) {
             this._node = node;
             this._domManipulator = manipulator;
         }
 
+        public detach() : void {
+            if (this._node.parentNode)
+                this._node.parentNode.removeChild(this._node);
+        }
+
+        public destroy() : void {
+            this.detach();
+            this._domManipulator.cache.removeNode(this._node);
+            this._node = null;
+        }
+
+        /**
+         * wrapped node accessor
+         * @return {Node} wrapped node
+         */
         get node() : Node {
             return this._node;
         }
 
+        /**
+         * parent of the node (owner element)
+         * @return {Node} parent of the node
+         */
         get parent() : Node {
             return this._node.parentNode;
         }
 
+        /**
+         * parent dom manipulator
+         * @return {DomManipulator} [description]
+         */
         get domManipulator() : DomManipulator {
             return this._domManipulator;
         }
