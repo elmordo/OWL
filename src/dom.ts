@@ -1,19 +1,44 @@
 
 export namespace OOW {
 
+    /**
+     * can modify dom
+     */
     export class DomManipulator {
 
+        /**
+         * window object
+         * @type {Window}
+         */
         readonly window: Window;
 
+        /**
+         * root element of the manipulator
+         * @type {CommonHtmlElement}
+         */
         readonly rootElement: CommonHtmlElement;
 
+        /**
+         * cache of the manipulated objects
+         * @type {MappedNodeCache}
+         */
         private _cache: MappedNodeCache;
 
+        /**
+         * create new manipulator instance
+         * @param {Window} window window object
+         * @param {HTMLElement} rootElement root element
+         */
         constructor (window: Window, rootElement: HTMLElement) {
             this.window = window;
             this.rootElement = <CommonHtmlElement>this.mapNode(rootElement);
         }
 
+        /**
+         * parse HTML from the string
+         * @param {string} html HTML source
+         * @return {CommonHtmlNode} parsed data
+         */
         public createNewFragment(html: string) : CommonHtmlNode {
             let parser: DOMParser = new DOMParser();
             let fragment: DocumentFragment = parser.parseFromString(html, "text/xml");
@@ -22,20 +47,33 @@ export namespace OOW {
             return this.mapNode(rootNode);
         }
 
+        /**
+         * map node by wrapper class
+         * @param {Node} node raw html node to wrap
+         * @return {CommonHtmlNode} wrapped node
+         */
         public mapNode(node:Node) : CommonHtmlNode {
             // TODO: real mapping
             return new CommonHtmlNode(node, this);
         }
 
+        /**
+         * return cache
+         * @return {MappedNodeCache} cache instance
+         */
         get cache() : MappedNodeCache {
             return this._cache;
         }
-
     }
 
+    /**
+     * create dom manipulator for current platform
+     * @param {Window} window window object
+     * @param {HTMLElement} rootElement root element
+     * @return {DomManipulator} final manipulator
+     */
     function domManipulatorFactory(window: Window, rootElement: HTMLElement) : DomManipulator {
         let manipulator: DomManipulator = new DomManipulator(window, rootElement);
-
         return manipulator;
     }
 
@@ -46,7 +84,6 @@ export namespace OOW {
     class MappedNodeLookup {
 
         [key: number]: CommonHtmlNode;
-
     }
 
     /**
@@ -157,13 +194,6 @@ export namespace OOW {
         }
     }
 
-
-    class AttributeCache {
-
-        [key: string]: CommonHtmlAttribute;
-
-    }
-
     /**
      * base of all nodes
      */
@@ -191,11 +221,18 @@ export namespace OOW {
             this._domManipulator = manipulator;
         }
 
+        /**
+         * dettach node from the DOM
+         * node persists in memory
+         */
         public detach() : void {
             if (this._node.parentNode)
                 this._node.parentNode.removeChild(this._node);
         }
 
+        /**
+         * dettach node from the DOM and destroy instance
+         */
         public destroy() : void {
             this.detach();
             this._domManipulator.cache.removeNode(this._node);
@@ -225,7 +262,6 @@ export namespace OOW {
         get domManipulator() : DomManipulator {
             return this._domManipulator;
         }
-
     }
 
     export class CommonHtmlAttribute extends CommonHtmlNode {
@@ -233,7 +269,6 @@ export namespace OOW {
         constructor(node: Node, manipulator: DomManipulator) {
             super(node, manipulator);
         }
-
     }
 
     export class CommonTextNode extends CommonHtmlNode {
@@ -241,7 +276,6 @@ export namespace OOW {
         constructor(node: Node, manipulator: DomManipulator) {
             super(node, manipulator);
         }
-
     }
 
     export class CommonHtmlElement extends CommonHtmlNode {
@@ -258,7 +292,6 @@ export namespace OOW {
         get element(): HTMLElement {
             return this._element;
         }
-
     };
 
 }
