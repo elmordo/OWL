@@ -24,7 +24,7 @@ export namespace OOW {
 
         public mapElement(element:HTMLElement) : CommonHtmlElement {
             // TODO: real mapping
-            return new CommonHtmlElement(element);
+            return new CommonHtmlElement(element, this);
         }
 
     }
@@ -72,13 +72,14 @@ export namespace OOW {
          * parent document
          * @type {Document}
          */
-        readonly document: Document;
+        private _document: Document;
 
         /**
          * initialize instance
          */
-        constructor() {
+        constructor(document: Document) {
             this._cache = new MappedElementLookup();
+            this._document = document;
         }
 
         /**
@@ -115,7 +116,7 @@ export namespace OOW {
          * @param {HTMLElement} element raw HTML element to remove
          * @throws Error element is not in cache
          */
-        public removeFromCache(element: HTMLElement) : void {
+        public removeElement(element: HTMLElement) : void {
             let id: number = this._getElementId(element);
             delete this._cache[id];
         }
@@ -151,7 +152,7 @@ export namespace OOW {
         private _setElementId(element: HTMLElement) : number {
             let id: number = MappedElementCache._nextId++;
 
-            let attr: Attr = document.createAttribute(MappedElementCache.ELEMENT_INTERNAL_ID_NAME);
+            let attr: Attr = this._document.createAttribute(MappedElementCache.ELEMENT_INTERNAL_ID_NAME);
             attr.value = id.toString();
             element.attributes.setNamedItem(attr);
 
@@ -163,21 +164,64 @@ export namespace OOW {
 
     class AttributeCache {
 
-        [key: string]: Attribute;
+        [key: string]: CommonHtmlAttribute;
 
     }
 
-    export class CommonHtmlElement {
+    export class CommonHtmlNode {
 
-        readonly element: HTMLElement;
+        protected _node: Node;
+
+        protected _domManipulator: DomManipulator;
+
+        constructor(node: Node, manipulator: DomManipulator) {
+            this._node = node;
+            this._domManipulator = manipulator;
+        }
+
+        get node() : Node {
+            return this._node;
+        }
+
+        get parent() : Node {
+            return this._node.parentNode;
+        }
+
+        get domManipulator() : DomManipulator {
+            return this._domManipulator;
+        }
+
+    }
+
+    export class CommonHtmlAttribute extends CommonHtmlNode {
+
+        constructor(node: Node, manipulator: DomManipulator) {
+            super(node, manipulator);
+        }
+
+    }
+
+    export class CommonTextNode extends CommonHtmlNode {
+
+        constructor(node: Node, manipulator: DomManipulator) {
+            super(node, manipulator);
+        }
+
+    }
+
+    export class CommonHtmlElement extends CommonHtmlNode {
 
         private _cachedAttributes: AttributeCache;
 
-        private _manipulator: DomManipulator;
+        protected _element: HTMLElement;
 
         constructor(element: HTMLElement, manipulator: DomManipulator) {
-            this.element = element;
-            this._manipulator = manipulator;
+            super(element, manipulator);
+            this._element = element;
+        }
+
+        get element(): HTMLElement {
+            return this._element;
         }
 
     };
