@@ -9,9 +9,16 @@ export namespace OOW {
 
         private _cache: MappedElementCache;
 
+        private _nodeTypeLookup: NodeMapperAbstractFactoryLookup;
+
         constructor (window: Window, rootElement: HTMLElement) {
             this.window = window;
-            this.rootElement = this.mapElement(rootElement);
+            this.rootElement = <CommonHtmlElement>this.mapNode(rootElement);
+
+            this._cache = new MappedElementCache(window.document);
+            this._nodeTypeLookup = new NodeMapperAbstractFactoryLookup();
+
+            this._initializeLookup();
         }
 
         public createNewFragment(html: string) : CommonHtmlElement {
@@ -19,14 +26,36 @@ export namespace OOW {
             let fragment: DocumentFragment = parser.parseFromString(html, "text/xml");
             let element: HTMLElement = <HTMLElement>fragment.firstChild;
 
-            return this.mapElement(element);
+            return <CommonHtmlElement>this.mapNode(element);
         }
 
-        public mapElement(element:HTMLElement) : CommonHtmlElement {
+        public mapNode(node:Node) : CommonHtmlNode {
             // TODO: real mapping
-            return new CommonHtmlElement(element, this);
+            return new CommonHtmlElement(node, this);
         }
 
+        private _initializeLookup() : void {
+            this._initializeAttrLookup();
+            this._initializeTextLookup();
+            this._initializeElementLookup();
+            this._initializeCommentLookup();
+        }
+
+        private _initializeAttrLookup() : void {
+            this._nodeTypeLookup[Node.ATTRIBUTE_NODE] = new NodeMapperAbstractFactory();
+        }
+
+        private _initializeTextLookup() : void {
+            this._nodeTypeLookup[Node.TEXT_NODE] = new NodeMapperAbstractFactory();
+        }
+
+        private _initializeElementLookup() : void {
+            this._nodeTypeLookup[Node.ELEMENT_NODE] = new NodeMapperAbstractFactory();
+        }
+
+        private _initializeCommentLookup() : void {
+            this._nodeTypeLookup[Node.COMMENT_NODE] = new NodeMapperAbstractFactory();
+        }
     }
 
     function domManipulatorFactory(window: Window, rootElement: HTMLElement) : DomManipulator {
@@ -35,14 +64,25 @@ export namespace OOW {
         return manipulator;
     }
 
+    class NodeMapperAbstractFactoryLookup {
+        [key: number]: NodeMapperAbstractFactory;
+    }
+
+    class NodeMapperAbstractFactory {
+        public getFactory(node: Node) : INodeMapperFactory {
+            return null;
+        }
+    }
+
+    interface INodeMapperFactory {
+        createMapper(node: Node) : CommonHtmlNode;
+    }
 
     /**
      * contains <cache id>-<mapped element> pairs
      */
     class MappedElementLookup {
-
         [key: number]: CommonHtmlElement;
-
     }
 
     /**
@@ -158,14 +198,11 @@ export namespace OOW {
 
             return id;
         }
-
     }
 
 
     class AttributeCache {
-
         [key: string]: CommonHtmlAttribute;
-
     }
 
     export class CommonHtmlNode {
@@ -190,40 +227,104 @@ export namespace OOW {
         get domManipulator() : DomManipulator {
             return this._domManipulator;
         }
-
-    }
-
-    export class CommonHtmlAttribute extends CommonHtmlNode {
-
-        constructor(node: Node, manipulator: DomManipulator) {
-            super(node, manipulator);
-        }
-
-    }
-
-    export class CommonTextNode extends CommonHtmlNode {
-
-        constructor(node: Node, manipulator: DomManipulator) {
-            super(node, manipulator);
-        }
-
     }
 
     export class CommonHtmlElement extends CommonHtmlNode {
 
-        private _cachedAttributes: AttributeCache;
-
-        protected _element: HTMLElement;
-
-        constructor(element: HTMLElement, manipulator: DomManipulator) {
-            super(element, manipulator);
-            this._element = element;
+        constructor(node: Node, manipulator: DomManipulator) {
+            super(node, manipulator);
         }
 
         get element(): HTMLElement {
-            return this._element;
+            return <HTMLElement>this.node;
         }
 
     };
+
+    /**
+     * wraps attribute (Attr class instance)
+     */
+    export class CommonHtmlAttribute extends CommonHtmlNode {
+
+        /**
+         * initialize instance
+         * @param {Attr} attribute attribute to wrap
+         * @param {DomManipulator} manipulator original manipulator
+         */
+        constructor(attribute: Attr, manipulator: DomManipulator) {
+            super(attribute, manipulator);
+        }
+
+        /**
+         * wrapped attribute
+         * @return {Attr} wrapped attribute
+         */
+        get attribute(): Attr {
+            return <Attr>this.node;
+        }
+
+        /**
+         * get attribute name
+         * @return {string} attribute name
+         */
+        get name(): string {
+            return this.attribute.name;
+        }
+
+        /**
+         * get attribute value
+         * @return {string} attribute value
+         */
+        get value(): string {
+            return this.attribute.value;
+        }
+
+        /**
+         * set attribute value
+         * @param {string} val new attribute value
+         */
+        set value(val: string) {
+            this.attribute.value = val;
+        }
+    }
+
+    /**
+     * wraps text node
+     */
+    export class CommonTextNode extends CommonHtmlNode {
+
+        /**
+         * initialize instance
+         * @param {Text} node original raw text node
+         * @param {DomManipulator} manipulator dom manipulator
+         */
+        constructor(node: Text, manipulator: DomManipulator) {
+            super(node, manipulator);
+        }
+
+        /**
+         * return wrapped raw node as Text
+         * @return {Text} [description]
+         */
+        get text(): Text {
+            return <Text> this.node;
+        }
+
+        /**
+         * get text content
+         * @return {string} stored content
+         */
+        get content(): string {
+            return this.text.textContent;
+        }
+
+        /**
+         * set stored content
+         * @param {string} val new content of the text node
+         */
+        set content(val: string) {
+            this.text.textContent = val;
+        }
+    }
 
 }
