@@ -233,8 +233,10 @@ class EventHandler {
      * @param {Event} event event to handle
      */
     public handle(event: Event) : void {
-        var context = this._context ? this._context : window;
-        this._callback.call(context, event);
+        if (this._context)
+            this._callback.call(this._context, event);
+        else
+            this._callback(event);
     }
 
     /**
