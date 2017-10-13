@@ -327,4 +327,42 @@ export namespace OOW {
         }
     }
 
+    /**
+     * represent comment node
+     */
+    export class CommonCommentNode extends CommonHtmlNode {
+
+        /**
+         * initialize instance
+         * @param {Node} node node to wrap
+         * @param {DomManipulator} manipulator manipulator
+         */
+        constructor(node: Node, manipulator: DomManipulator) {
+            super(node, manipulator);
+        }
+
+        /**
+         * get wrapped comment node
+         */
+        get comment: Comment {
+            return <Comment>this.node;
+        }
+
+        /**
+         * get comment content
+         * @return {string} comment content
+         */
+        get content(): string {
+            return this.comment.text;
+        }
+
+        /**
+         * set new comment content
+         * @param {string} val new comment content
+         */
+        set content(val: string) {
+            this.comment.text = val;
+        }
+    }
+
 }
