@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "test"
+    "test": "mocha -r ts-node/register tests/unittests/**/*.ts"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,11 @@
     "ui"
   ],
   "author": "Petr Jindra",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.43",
+    "ts-node": "^3.3.0",
+    "typings": "^2.1.1"
+  }
 }
