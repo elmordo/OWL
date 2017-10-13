@@ -2,12 +2,17 @@
   "name": "owlonweb",
   "version": "1.0.0",
   "description": "Another UI framework",
-  "main": "src/main.js",
+  "main": "index.js",
   "directories": {
-    "doc": "docs"
+    "doc": "docs",
+    "test": "test",
+    "lib": "src",
+    "out": "out"
   },
   "scripts": {
-    "test": "mocha -r ts-node/register tests/unittests/**/*.ts"
+    "compile": "tsc -t ES5 src/*.ts",
+    "build": "npm run compile && cat src/*.js > index.js",
+    "test": "npm run build && mocha -r ts-node/register tests/unittests/**/*.ts"
   },
   "repository": {
     "type": "git",

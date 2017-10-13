@@ -1,259 +1,255 @@
 
-export namespace OOW {
+/**
+ * represents event
+ */
+export class Event {
 
     /**
-     * represents event
+     * type of the event
+     * @type {string}
      */
-    export class Event {
+    public readonly type: string;
 
-        /**
-         * type of the event
-         * @type {string}
-         */
-        public readonly type: string;
+    /**
+     * transfered additional data
+     * @type {Object}
+     */
+    public readonly data: Object;
 
-        /**
-         * transfered additional data
-         * @type {Object}
-         */
-        public readonly data: Object;
+    /**
+     * sender of the event
+     * @type {EventDispatcher}
+     */
+    private _target: EventDispatcher;
 
-        /**
-         * sender of the event
-         * @type {EventDispatcher}
-         */
-        private _target: EventDispatcher;
+    /**
+     * current target (if event is bubbling)
+     * @type {EventDispatcher}
+     */
+    private _currentTarget: EventDispatcher;
 
-        /**
-         * current target (if event is bubbling)
-         * @type {EventDispatcher}
-         */
-        private _currentTarget: EventDispatcher;
+    /**
+     * true if event should be propagate to upper level
+     * @type {boolean}
+     */
+    private _propagate: boolean;
 
-        /**
-         * true if event should be propagate to upper level
-         * @type {boolean}
-         */
-        private _propagate: boolean;
-
-        /**
-         * initialize instance
-         * @param {string} type type of the event
-         */
-        constructor(type: string, data: Object) {
-            this.type = type;
-            this._propagate = true;
-            this.data = data;
-        }
-
-        /**
-         * get propagate value
-         * @return {boolean} propagate flag value
-         */
-        get propagate() : boolean {
-            return this._propagate;
-        }
-
-        /**
-         * set new propagate flag value
-         * @param {boolean} val new value to be set
-         */
-        set propagate(val: boolean) {
-            this._propagate = val;
-        }
-
-        /**
-         * get current target
-         * @return {EventDispatcher} current target
-         */
-        get currentTarget(): EventDispatcher {
-            return this._currentTarget;
-        }
-
-        /**
-         * set current target
-         * @param {EventDispatcher} val new current target
-         */
-        set currentTarget(val: EventDispatcher) {
-            this._currentTarget = val;
-        }
+    /**
+     * initialize instance
+     * @param {string} type type of the event
+     */
+    constructor(type: string, data: Object) {
+        this.type = type;
+        this._propagate = true;
+        this.data = data;
     }
 
     /**
-     * base class for all event dispatching classes
+     * get propagate value
+     * @return {boolean} propagate flag value
      */
-    export class EventDispatcher {
+    get propagate() : boolean {
+        return this._propagate;
+    }
 
-        /**
-         * current event queue
-         * @type {Event[]}
-         */
-        private _queue: Event[];
+    /**
+     * set new propagate flag value
+     * @param {boolean} val new value to be set
+     */
+    set propagate(val: boolean) {
+        this._propagate = val;
+    }
 
-        /**
-         * event processing flag
-         * @type {boolean}
-         */
-        private _inDispatchProcess: boolean;
+    /**
+     * get current target
+     * @return {EventDispatcher} current target
+     */
+    get currentTarget(): EventDispatcher {
+        return this._currentTarget;
+    }
 
-        /**
-         * set of handlers
-         * the key is event type
-         * the value is array of handlers
-         * @type {EventHandlerLookup}
-         */
-        private _handlers: EventHandlerLookup;
+    /**
+     * set current target
+     * @param {EventDispatcher} val new current target
+     */
+    set currentTarget(val: EventDispatcher) {
+        this._currentTarget = val;
+    }
+}
 
-        /**
-         * initialize instance
-         */
-        constructor() {
-            this._queue = new Array<Event>();
-            this._handlers = new EventHandlerLookup();
+/**
+ * base class for all event dispatching classes
+ */
+export class EventDispatcher {
+
+    /**
+     * current event queue
+     * @type {Event[]}
+     */
+    private _queue: Event[];
+
+    /**
+     * event processing flag
+     * @type {boolean}
+     */
+    private _inDispatchProcess: boolean;
+
+    /**
+     * set of handlers
+     * the key is event type
+     * the value is array of handlers
+     * @type {EventHandlerLookup}
+     */
+    private _handlers: EventHandlerLookup;
+
+    /**
+     * initialize instance
+     */
+    constructor() {
+        this._queue = new Array<Event>();
+        this._handlers = new EventHandlerLookup();
+        this._inDispatchProcess = false;
+    }
+
+    /**
+     * dispatch event
+     * @param {Event} evt event instance to dispatch
+     */
+    public dispatchEvent(evt: Event): void {
+        this._queue.push(evt);
+
+        if (!this._inDispatchProcess)
+            this._processQueue();
+    }
+
+    /**
+     * add event listener for event type
+     * @param {string} eventType type of the event
+     * @param {Function} callback function call when event is dispatched
+     * @param {Object=null} context optional call context
+     * @return {Function} listener remover
+     */
+    public addEventListener(eventType: string, callback: Function, context: Object=null) : Function {
+        let handlers: EventHandler[] = this._getHandlerHolder(eventType);
+        let index: number = handlers.length;
+
+        handlers.push(new EventHandler(callback, context));
+        return this._createRemover(handlers, index);
+    }
+
+    /**
+     * get existing or create new holder of the event handlers
+     * @param {string} eventType event type
+     * @return {EventHandler[]} handler holder
+     */
+    private _getHandlerHolder(eventType: string) : EventHandler[] {
+        if (this._handlers[eventType] === undefined)
+            this._handlers[eventType] = new Array<EventHandler>();
+
+        return this._handlers[eventType];
+    }
+
+    /**
+     * create remover for element in array
+     * @type {A} type of the array
+     * @param {A} arr array ot remove from
+     * @param {number} index index of the element to remove
+     * @returns Function remover
+     */
+    private _createRemover<A>(arr: A, index:number) : Function {
+        function remover() {
+            delete arr[index];
+        }
+
+        return remover;
+    }
+
+    /**
+     * process event queue
+     */
+    private _processQueue() : void {
+        this._inDispatchProcess = true;
+
+        try {
+            while (this._queue.length) {
+                let evt = this._queue.shift();
+                this._processEvent(evt);
+            }
+        } finally {
             this._inDispatchProcess = false;
         }
-
-        /**
-         * dispatch event
-         * @param {Event} evt event instance to dispatch
-         */
-        public dispatchEvent(evt: Event): void {
-            this._queue.push(evt);
-
-            if (!this._inDispatchProcess)
-                this._processQueue();
-        }
-
-        /**
-         * add event listener for event type
-         * @param {string} eventType type of the event
-         * @param {Function} callback function call when event is dispatched
-         * @param {Object=null} context optional call context
-         * @return {Function} listener remover
-         */
-        public addEventListener(eventType: string, callback: Function, context: Object=null) : Function {
-            let handlers: EventHandler[] = this._getHandlerHolder(eventType);
-            let index: number = handlers.length;
-
-            handlers.push(new EventHandler(callback, context));
-            return this._createRemover(handlers, index);
-        }
-
-        /**
-         * get existing or create new holder of the event handlers
-         * @param {string} eventType event type
-         * @return {EventHandler[]} handler holder
-         */
-        private _getHandlerHolder(eventType: string) : EventHandler[] {
-            if (this._handlers[eventType] === undefined)
-                this._handlers[eventType] = new Array<EventHandler>();
-
-            return this._handlers[eventType];
-        }
-
-        /**
-         * create remover for element in array
-         * @type {A} type of the array
-         * @param {A} arr array ot remove from
-         * @param {number} index index of the element to remove
-         * @returns Function remover
-         */
-        private _createRemover<A>(arr: A, index:number) : Function {
-            function remover() {
-                delete arr[index];
-            }
-
-            return remover;
-        }
-
-        /**
-         * process event queue
-         */
-        private _processQueue() : void {
-            this._inDispatchProcess = true;
-
-            try {
-                while (this._queue.length) {
-                    let evt = this._queue.shift();
-                    this._processEvent(evt);
-                }
-            } finally {
-                this._inDispatchProcess = false;
-            }
-        }
-
-        /**
-         * process one event
-         * @param {Event} evt event to process
-         */
-        private _processEvent(evt: Event) : void {
-            let handlers: EventHandler[] = this._getHandlerHolder(evt.type);
-
-            handlers.forEach(function (handler) {
-                try {
-                    handler.handle(evt);
-                } catch (err) {
-                    console.error(err);
-                }
-            });
-        }
-    }
-
-    class EventHandlerLookup {
-        [key: string]: EventHandler[];
     }
 
     /**
-     * hold information about event handler
+     * process one event
+     * @param {Event} evt event to process
      */
-    class EventHandler {
+    private _processEvent(evt: Event) : void {
+        let handlers: EventHandler[] = this._getHandlerHolder(evt.type);
 
-        /**
-         * callback function
-         * @type {Function}
-         */
-        private _callback: Function;
+        handlers.forEach(function (handler) {
+            try {
+                handler.handle(evt);
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    }
+}
 
-        /**
-         * context object (if null, window is used)
-         * @type {Object}
-         */
-        private _context: Object;
+class EventHandlerLookup {
+    [key: string]: EventHandler[];
+}
 
-        /**
-         * initialize instance
-         * @param {Function} callback callback to set
-         * @param {Object=null} context context object to call callback in
-         */
-        constructor(callback: Function, context: Object=null) {
-            this._callback = callback;
-            this._context = context;
-        }
+/**
+ * hold information about event handler
+ */
+class EventHandler {
 
-        /**
-         * handle event
-         * @param {Event} event event to handle
-         */
-        public handle(event: Event) : void {
-            var context = this._context ? this._context : window;
-            this._callback.call(context, event);
-        }
+    /**
+     * callback function
+     * @type {Function}
+     */
+    private _callback: Function;
 
-        /**
-         * get callback instance
-         * @return {Function} callback function
-         */
-        get callback(): Function {
-            return this._callback;
-        }
+    /**
+     * context object (if null, window is used)
+     * @type {Object}
+     */
+    private _context: Object;
 
-        /**
-         * get context
-         * @return {Object} context to call callback in
-         */
-        get context(): Object {
-            return this._context;
-        }
+    /**
+     * initialize instance
+     * @param {Function} callback callback to set
+     * @param {Object=null} context context object to call callback in
+     */
+    constructor(callback: Function, context: Object=null) {
+        this._callback = callback;
+        this._context = context;
     }
 
+    /**
+     * handle event
+     * @param {Event} event event to handle
+     */
+    public handle(event: Event) : void {
+        var context = this._context ? this._context : window;
+        this._callback.call(context, event);
+    }
+
+    /**
+     * get callback instance
+     * @return {Function} callback function
+     */
+    get callback(): Function {
+        return this._callback;
+    }
+
+    /**
+     * get context
+     * @return {Object} context to call callback in
+     */
+    get context(): Object {
+        return this._context;
+    }
 }

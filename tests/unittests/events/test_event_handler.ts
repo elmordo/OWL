@@ -1,5 +1,8 @@
-import { OOW } from '../../../src/events';
+import * as k from 'owlonweb';
 
+console.log(k);
+
+/*
 type EventDispatcher = OOW.EventDispatcher
 
 import { expect } from 'chai';
@@ -13,3 +16,4 @@ describe('Hello function', () => {
   });
 });
 
+*/
