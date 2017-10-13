@@ -1,0 +1,21 @@
+{
+  "name": "owlonweb",
+  "version": "1.0.0",
+  "description": "Another UI framework",
+  "main": "src/main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://petr@guitarian.net/~/git/OwlOnWeb"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "Petr Jindra",
+  "license": "ISC"
+}
