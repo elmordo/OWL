@@ -4,4 +4,5 @@
 *.sublime-*
 typings
 node_modules
+*.log
 
