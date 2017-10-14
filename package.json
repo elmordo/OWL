@@ -10,7 +10,7 @@
     "out": "out"
   },
   "scripts": {
-    "compile": "tsc -t ES5 src/*.ts",
+    "compile": "tsc --module commonjs -t ES5 src/*.ts",
     "build": "npm run compile && cat src/*.js > index.js",
     "test": "npm run build && mocha -r ts-node/register tests/unittests/**/*.ts"
   },
@@ -27,10 +27,13 @@
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.43",
     "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "ts-loader": "^2.3.7",
     "ts-node": "^3.3.0",
     "typings": "^2.1.1"
   },
   "dependencies": {
-    "chai": "^4.1.2"
+    "chai": "^4.1.2",
+    "systemjs": "^0.20.19"
   }
 }

@@ -1,7 +1,7 @@
 /**
  * error thrown when item missing in ServiceIndex or Namespace index
  */
-class LookupError extends Error {
+export class LookupError extends Error {
 }
 
 export class ServiceBase {
@@ -181,6 +181,10 @@ export class ServiceManager extends ServiceNamespace {
     public getServiceByPath(path: string) : ServiceBase {
         let pathInfo: ServicePathInfo = this._splitPath(path);
         let ns: ServiceNamespace = this._getNamespaceByPathArray(pathInfo.pathParts);
+        let factory: Function = <Function>ns[pathInfo.serviceName];
+
+        if (!factory)
+            throw new LookupError("Service '" + pathInfo.serviceName + "' not found");
 
         let result: ServiceBase = <ServiceBase>(<Function>ns[pathInfo.serviceName])();
         return result;

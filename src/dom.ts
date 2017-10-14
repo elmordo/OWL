@@ -56,7 +56,7 @@ export class DomManipulator {
     }
 }
 
-function domManipulatorFactory(window: Window, rootElement: HTMLElement) : DomManipulator {
+export function domManipulatorFactory(window: Window, rootElement: HTMLElement) : DomManipulator {
     let manipulator: DomManipulator = new DomManipulator(window, rootElement);
 
     return manipulator;
