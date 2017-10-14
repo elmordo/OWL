@@ -1,5 +1,5 @@
 
-import { ServiceManager, ServiceBase } from "owlonweb"
+import { ServiceManager, ServiceBase } from "../../../src/service_management"
 import { expect } from "chai"
 
 

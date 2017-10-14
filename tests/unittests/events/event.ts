@@ -1,4 +1,4 @@
-import { Event } from "owlonweb";
+import { Event } from "../../../src/events";
 import { expect } from "chai";
 
 

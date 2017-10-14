@@ -1,12 +1,12 @@
 module.exports = {
     entry: [
-        "./src/index.ts",
-        "./src/events.ts",
-        "./src/dom.ts",
-        "./src/service_management.ts"
+        "./tests/unittests/events/event.ts",
+        "./tests/unittests/events/event_dispatcher.ts",
+        "./tests/unittests/service_management/service_manager.ts",
+        "./tests/unittests/service_management/service_namespace.ts",
     ],
     output: {
-        filename: "dist/owlonweb.js"
+        filename: "./tests/browser_runner/bundle.js"
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.

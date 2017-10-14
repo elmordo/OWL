@@ -1,4 +1,4 @@
-import { ServiceNamespace } from "owlonweb"
+import { ServiceNamespace } from "../../../src/service_management"
 import { expect } from "chai"
 
 

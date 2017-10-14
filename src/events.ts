@@ -38,7 +38,7 @@ export class Event {
      * initialize instance
      * @param {string} type type of the event
      */
-    constructor(type: string, data: Object) {
+    constructor(type: string, data: Object=null) {
         this.type = type;
         this._propagate = true;
         this.data = data;
