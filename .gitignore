@@ -5,5 +5,5 @@
 typings
 node_modules
 *.log
-/index.js
+/dist
 

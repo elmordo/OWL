@@ -10,9 +10,7 @@
     "out": "out"
   },
   "scripts": {
-    "compile": "tsc --module commonjs -t ES5 src/*.ts",
-    "build": "npm run compile && cat src/*.js > index.js",
-    "test": "npm run build && mocha -r ts-node/register tests/unittests/**/*.ts"
+    "compile": "webpack"
   },
   "repository": {
     "type": "git",

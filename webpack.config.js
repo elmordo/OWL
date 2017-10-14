@@ -1,7 +1,7 @@
 module.exports = {
     entry: "./src/index.ts",
     output: {
-        filename: "bundle.js"
+        filename: "dist/owlonweb.js"
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.
