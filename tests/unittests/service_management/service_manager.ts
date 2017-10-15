@@ -14,7 +14,7 @@ describe("Test service manager", () => {
         let nsParts: string[] = [ "ns1", "ns2", "ns3" ];
         let nsPath = nsParts.join(".");
 
-        let finalNs = sm.getNamespace(nsParts[0]).getNamespace(nsParts[1]).getNamespace(nsParts[2]);
+        let finalNs = sm.rootNamespace.getNamespace(nsParts[0]).getNamespace(nsParts[1]).getNamespace(nsParts[2]);
         let ns = sm.getNamespaceByPath(nsPath);
 
         expect(ns === finalNs).true;

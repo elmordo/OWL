@@ -147,7 +147,16 @@ export class ServiceNamespace {
 /**
  * manage services
  */
-export class ServiceManager extends ServiceNamespace {
+export class ServiceManager {
+
+    private _rootNamespace: ServiceNamespace;
+
+    constructor(rootNamespace: ServiceNamespace=null) {
+        if (rootNamespace == null)
+            rootNamespace = new ServiceNamespace();
+
+        this._rootNamespace = rootNamespace;
+    }
 
     /**
      * register new service into manager
@@ -190,13 +199,17 @@ export class ServiceManager extends ServiceNamespace {
         return result;
     }
 
+    public get rootNamespace(): ServiceNamespace {
+        return this._rootNamespace;
+    }
+
     /**
      * get namespace identified by array path
      * @param {string[]} pathArray array path
      * @return {ServiceNamespace} namespace
      */
     private _getNamespaceByPathArray(pathArray: string[]) : ServiceNamespace {
-        let current: ServiceNamespace = this;
+        let current: ServiceNamespace = this._rootNamespace;
 
         pathArray.forEach(function (nsName: string) {
             current = current.getNamespace(nsName);
