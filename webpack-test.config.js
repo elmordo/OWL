@@ -4,6 +4,8 @@ module.exports = {
         "./tests/unittests/events/event_dispatcher.ts",
         "./tests/unittests/service_management/service_manager.ts",
         "./tests/unittests/service_management/service_namespace.ts",
+        "./tests/unittests/dom/dom_manipulator.ts",
+        "./tests/unittests/dom/common_html_element.ts"
     ],
     output: {
         filename: "./tests/browser_runner/bundle.js"

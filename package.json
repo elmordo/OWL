@@ -2,7 +2,7 @@
   "name": "owlonweb",
   "version": "1.0.0",
   "description": "Another UI framework",
-  "main": "dist/index.js",
+  "main": "index.js",
   "directories": {
     "doc": "docs",
     "test": "test",
