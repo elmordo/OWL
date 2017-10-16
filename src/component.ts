@@ -1,5 +1,7 @@
 
-import { ServiceManager } from "./service_management"
+import { ServiceManager } from "./service_management";
+import { IRenderer, RenderResult } from "./rendering";
+import { DomManipulator } from "./dom";
 
 /**
  * describe component and hold information required to create
@@ -97,12 +99,20 @@ export class ComponentManager {
     private _serviceManager: ServiceManager;
 
     /**
+     * the instance of dom manipulator
+     * @type {DomManipulator}
+     */
+    private _domManipulator: DomManipulator;
+
+    /**
      * initialize instance
      * @param {ServiceManager} serviceManager service manager where service as stored
+     * @param {DomManipulator} domManipulator dom manipulator to use for rendering
      */
-    constructor(serviceManager: ServiceManager) {
+    constructor(serviceManager: ServiceManager, domManipulator: DomManipulator) {
         this._components = new ComponentLookup();
         this._serviceManager = serviceManager;
+        this._domManipulator = domManipulator;
     }
 
     /**
@@ -113,6 +123,36 @@ export class ComponentManager {
     public registerComponent(component: ComponentDescription): void {
         this._assertNotExists(component.name);
         this._components[component.name] = component;
+    }
+
+    public createComponentInstance(name: string, options: Object) : ControllerBase {
+        this._assertExists(name);
+
+        let componentDsc: ComponentDescription = this._components[name];
+        let renderedContent: RenderResult = this._renderComponent(componentDsc, options);
+
+        return this._createController(componentDsc, options, renderedContent);
+    }
+
+    /**
+     * render component HTML
+     * @param {ComponentDescription} description description of the component to render
+     * @param {Object} options options for renderer
+     * @return {RenderResult} result of rendering process
+     */
+    private _renderComponent(description: ComponentDescription, options: Object) : RenderResult {
+        let rendererName: string = description.rendererName;
+        let renderer: IRenderer = <IRenderer>this._serviceManager.getServiceByPath(rendererName);
+
+        return renderer.render(this._domManipulator, options);
+    }
+
+    private _createController(description: ComponentDescription, options: Object, rendered: RenderResult) : ControllerBase {
+        let controllerName: string = description.controllerName;
+
+        let controller: ControllerBase = <ControllerBase>this._serviceManager.getServiceByPath(controllerName);
+        controller.setup(rendered, options);
+        return controller;
     }
 
     /**
@@ -139,6 +179,27 @@ export class ComponentManager {
 
 export class ControllerBase {
 
+    static OPT_ID = "id";
+
+    protected _html: RenderResult;
+
+    private _id: string;
+
+    constructor() {
+    }
+
+    /**
+     * setup the instance
+     * @param {Object} options options to setup
+     */
+    public setup(renderedContent: RenderResult, options: Object) : void {
+        this._html = renderedContent;
+        this._id = options[ControllerBase.OPT_ID] || null;
+    }
+
+    get id(): string {
+        return this._id;
+    }
 }
 
 

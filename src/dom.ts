@@ -545,14 +545,14 @@ export class CommonHtmlComment extends CommonHtmlNode {
 
 export class CommonNodeList extends Array<CommonHtmlNode> {
 
-    public first() : CommonHtmlNode {
+    get first() : CommonHtmlNode {
         if (this.length == 0)
             throw new Error("The list is empty");
 
         return this[0];
     }
 
-    public last() : CommonHtmlNode {
+    get last() : CommonHtmlNode {
         if (this.length == 0)
             throw new Error("The list is empty");
         return this[this.length - 1];

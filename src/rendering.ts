@@ -9,9 +9,10 @@ export interface IRenderer {
     /**
      * render component to dom
      * @param {DomManipulator} manipulator dom manipulator
+     * @param {Object} options rendering options
      * @return {RenderResult} render result
      */
-    render(manipulator: DomManipulator): RenderResult;
+    render(manipulator: DomManipulator, options: Object): RenderResult;
 }
 
 
