@@ -23,7 +23,7 @@ export class ModuleManager {
     /**
      * initialize instance
      */
-    construct() {
+    constructor() {
         this._modules = new Array<Module>();
     }
 
@@ -201,7 +201,7 @@ class DependencyResolver {
     /**
      * initialize instance
      */
-    construct() {
+    constructor() {
         this._remainingDependencies = new Array<DependencyResolvingRecord>();
     }
 
@@ -316,7 +316,7 @@ class DependencyResolvingRecord {
      * @param {string} name module name
      * @param {string[]} dependencies set of module dependencies
      */
-    construct(name: string, dependencies: string[]) {
+    constructor(name: string, dependencies: string[]) {
         this.name = name;
         this.dependencies = new Array<string>();
         this.addDependencies(dependencies);
