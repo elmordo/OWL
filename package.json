@@ -1,8 +1,8 @@
 {
-  "name": "owlonweb",
+  "name": "owlisweblibrary",
   "version": "1.0.0",
   "description": "Another UI framework",
-  "main": "dist/owlonweb.js",
+  "main": "dist/owl.js",
   "directories": {
     "doc": "docs",
     "test": "test",

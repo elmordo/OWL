@@ -7,7 +7,7 @@ module.exports = {
         "./src/service_management.ts"
     ],
     output: {
-        filename: "dist/owlonweb.js"
+        filename: "dist/owl.js"
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.
