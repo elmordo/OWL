@@ -21,40 +21,81 @@ export class ModuleManager {
 }
 
 
+/**
+ * lookup for the service manager
+ * the key is module name
+ * the value is module's service manager
+ */
 export class ServiceManagerLookup {
 
     [key: string]: ServiceManager;
 }
 
 
+/**
+ * represent module and hold data need for the initialization
+ */
 class Module {
 
+    /**
+     * name of the module
+     * @type {string}
+     */
     private _name: string;
 
+    /**
+     * set of module dependencies
+     * @type {string[]}
+     */
     private _dependencies: string[];
 
+    /**
+     * factory function
+     * @type {ModuleFactoryFn}
+     */
     private _factoryFn: ModuleFactoryFn;
 
+    /**
+     * initialize instance
+     * @param {string} name module name
+     * @param {string[]} dependecies set of dependencies
+     * @param {ModuleFactoryFn} factory factory function
+     */
     constructor(name: string, dependecies: string[], factory: ModuleFactoryFn) {
         this._name = name;
         this._dependencies = dependecies;
         this._factoryFn = factory;
     }
 
+    /**
+     * name of the module
+     * @return {string} name of the module
+     */
     get name(): string {
         return this._name;
     }
 
+    /**
+     * set of dependencies
+     * @return {string[]} set of dependencies
+     */
     get dependencies(): string[] {
         return this._dependencies;
     }
 
+    /**
+     * factory function initializing the module
+     * @return {ModuleFactoryFn} factory function
+     */
     get factoryFn(): ModuleFactoryFn {
         return this._factoryFn;
     }
 }
 
 
+/**
+ * resolve dependencies for the module initialization
+ */
 class DependencyResolver {
 
     /**
