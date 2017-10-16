@@ -18,6 +18,7 @@ export class OwlInWeb {
 
     constructor() {
         this._serviceManager = new ServiceManager();
+        this._moduleManager = new ModuleManager();
         this._domManipulator = null;
     }
 
