@@ -137,6 +137,11 @@ export class ComponentManager {
 }
 
 
+export class ControllerBase {
+
+}
+
+
 /**
  * the key is component name
  * the value is component description instance

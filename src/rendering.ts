@@ -1,0 +1,82 @@
+
+import { DomManipulator, CommonHtmlNode } from "./dom";
+
+/**
+ * interface for all renderers
+ */
+export interface IRenderer {
+
+    /**
+     * render component to dom
+     * @param {DomManipulator} manipulator dom manipulator
+     * @return {RenderResult} render result
+     */
+    render(manipulator: DomManipulator): RenderResult;
+}
+
+
+/**
+ * hold rendered DOM nodes
+ */
+export class RenderResult {
+
+    /**
+     * the root node
+     * @type {CommonHtmlNode}
+     */
+    private _rootNode: CommonHtmlNode;
+
+    /**
+     * entry nodes for inserting some content
+     * @type {EntryNodeLookup}
+     */
+    private _entryNodes: EntryNodeLookup;
+
+    /**
+     * initialize instance
+     * @param {CommonHtmlNode} rootNode root node
+     * @param {EntryNodeLookup} entryNodes entry nodes
+     */
+    constructor(rootNode: CommonHtmlNode, entryNodes: EntryNodeLookup) {
+        this._rootNode = rootNode;
+        this._entryNodes = entryNodes;
+    }
+
+    /**
+     * get entry node
+     * @param {string} name name of the entry node
+     * @return {CommonHtmlNode} entry node
+     * @throws Error entry node does not exist
+     */
+    public getEntry(name: string) : CommonHtmlNode {
+        this._assertEntryExists(name);
+        return this._entryNodes[name];
+    }
+
+    /**
+     * get root node
+     * @return {CommonHtmlNode} root node
+     */
+    get rootNode(): CommonHtmlNode {
+        return this._rootNode;
+    }
+
+    /**
+     * throw error if entry node does not exist
+     * @param {string} name name of the etry node
+     * @throws Error entry node does not exist
+     */
+    private _assertEntryExists(name: string) : void {
+        if (!this._entryNodes[name])
+            throw new Error("Entry node '" + name + "' does not exist");
+    }
+}
+
+
+/**
+ * the key is entry node name
+ * the value is entry node
+ */
+export class EntryNodeLookup {
+    [name: string]: CommonHtmlNode;
+}
