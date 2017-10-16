@@ -1,17 +1,18 @@
 
 import { IRenderer, RenderResult, EntryNodeLookup } from "../../rendering"
 import { DomManipulator, CommonHtmlNode, CommonHtmlText } from "../../dom"
-import { ControllerBase } from "../../component"
+import { ControllerBase, ComponentManager, ComponentDescription } from "../../component"
+import { ServiceManager, ServiceNamespace } from "../../service_management"
 
 
-export class SimpleButtonRenderer implements IRenderer {
+export class Renderer implements IRenderer {
 
     static BUTTON_TEMPLATE = "<button type='button'>button</button>";
 
     static ENTRY_LABEL = "label";
 
     public render(manipulator: DomManipulator, options: Object) : RenderResult {
-        let button = manipulator.createNewFragment(SimpleButtonRenderer.BUTTON_TEMPLATE);
+        let button = manipulator.createNewFragment(Renderer.BUTTON_TEMPLATE);
         let entryNodes = new EntryNodeLookup();
 
         entryNodes["label"] = button.chidlren.first;
@@ -23,7 +24,7 @@ export class SimpleButtonRenderer implements IRenderer {
 }
 
 
-export class SimpleButtonController extends ControllerBase {
+export class Controller extends ControllerBase {;
 
     private _label: CommonHtmlText;
 
@@ -33,7 +34,7 @@ export class SimpleButtonController extends ControllerBase {
 
     public setup(renderedContent: RenderResult, options: Object) : void {
         super.setup(renderedContent, options);
-        this._label = <CommonHtmlText>renderedContent.getEntry(SimpleButtonRenderer.ENTRY_LABEL);
+        this._label = <CommonHtmlText>renderedContent.getEntry(Renderer.ENTRY_LABEL);
     }
 
     get label(): string {
@@ -43,4 +44,18 @@ export class SimpleButtonController extends ControllerBase {
     set label(val: string) {
         this._label.content = val;
     }
+}
+
+
+export function register(cm: ComponentManager, sm: ServiceManager): void {
+    let baseNs = "owl.component.button.simple";
+
+    let rendererName: string = baseNs + ".renderer";
+    let controllerName: string = baseNs + ".controller";
+
+    sm.registerService(rendererName, () => { return new Renderer(); });
+    sm.registerService(controllerName, () => { return new Controller(); });
+
+    let dsc: ComponentDescription = new ComponentDescription("owlSimpleButton", rendererName, controllerName);
+    cm.registerComponent(dsc);
 }
