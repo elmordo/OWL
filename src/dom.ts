@@ -116,7 +116,7 @@ class NodeMapperAbstractFactory {
 /**
  * inteface for all node mappers
  */
-interface INodeMapperFactory {
+export interface INodeMapperFactory {
 
     /**
      * map node
@@ -138,7 +138,7 @@ interface INodeMapperFactory {
 /**
  * map node to the common element mapper
  */
-class CommonElementMapper implements INodeMapperFactory {
+export class CommonElementMapper implements INodeMapperFactory {
 
     /**
      * map node
@@ -164,7 +164,7 @@ class CommonElementMapper implements INodeMapperFactory {
 /**
  * map node to common attribute mapper
  */
-class CommonAttributeMapper implements INodeMapperFactory {
+export class CommonAttributeMapper implements INodeMapperFactory {
 
     /**
      * map node
@@ -190,7 +190,7 @@ class CommonAttributeMapper implements INodeMapperFactory {
 /**
  * map node to common text mapper
  */
-class CommonTextMapper implements INodeMapperFactory {
+export class CommonTextMapper implements INodeMapperFactory {
 
     /**
      * map node
@@ -216,7 +216,7 @@ class CommonTextMapper implements INodeMapperFactory {
 /**
  * map node to common comment mapper
  */
-class CommonCommentMapper implements INodeMapperFactory {
+export class CommonCommentMapper implements INodeMapperFactory {
 
     /**
      * map node
