@@ -1,22 +1,116 @@
-import { ServiceManager } from "./service_management"
+import { ServiceManager, ServiceNamespace } from "./service_management"
 
 export type ModuleFactoryFn = (rootServiceManager: ServiceManager, moduleServiceManager: ServiceManager, dependecies: ServiceManagerLookup) => void;
 
 
+/**
+ * manage and bootstrap (initialize) modules
+ */
 export class ModuleManager {
 
+    /**
+     * name of the namespace where modules are stored
+     * @type {String}
+     */
+    public static MODULE_NS = "module";
+
+    /**
+     * registered modules
+     * @type {Module[]}
+     */
     private _modules: Module[];
 
+    /**
+     * initialize instance
+     */
     construct() {
         this._modules = new Array<Module>();
     }
 
+    /**
+     * add module to the manager
+     * @param {string} name name of the module
+     * @param {string[]} dependencies set of dependencies
+     * @param {ModuleFactoryFn} factory factory function
+     */
     public addModule(name: string, dependencies: string[], factory: ModuleFactoryFn) : void {
         this._modules.push(new Module(name, dependencies, factory));
     }
 
+    /**
+     * initialize all registered modules
+     * @param {ServiceManager} serviceManager the top level service manager
+     */
     public initializeModules(serviceManager: ServiceManager) : void {
-        // code...
+        let resolver: DependencyResolver = this._createResolver();
+        let moduleLookup: Object = new Object();
+        let moduleManagers: ServiceManagerLookup = new ServiceManagerLookup();
+        let moduleServiceManager: ServiceManager = new ServiceManager(serviceManager.getNamespaceByPath(ModuleManager.MODULE_NS));
+
+        for (let m of this._modules) moduleLookup[m.name] = m;
+
+        while(resolver.getRemainingModulesCount() > 0) {
+            let moduleName = resolver.getSatisfiedModuleName();
+            let moduleInstance: Module = moduleLookup[moduleName];
+
+            let sm: ServiceManager = this._initializeModule(moduleInstance,
+                serviceManager, moduleServiceManager, moduleManagers);
+
+            moduleManagers[moduleName] = sm;
+
+            resolver.markAsResolved(moduleName);
+        }
+    }
+
+    /**
+     * create initialized dependency resolver
+     * @return {DependencyResolver} initialized dependency resolver
+     */
+    private _createResolver() : DependencyResolver {
+        let resolver: DependencyResolver = new DependencyResolver();
+
+        for (let m of this._modules)
+            resolver.addModule(m.name, m.dependencies);
+
+        return resolver;
+    }
+
+    /**
+     * initialize one module
+     * @param {Module} moduleInstance instance of the module
+     * @param {ServiceManager} rootServiceManager root service manager (top level)
+     * @param {ServiceManager} moduleLevelServiceManager service manager with modules
+     * @param {ServiceManagerLookup} moduleManagers lookup with all initialized modules service managers
+     * @return {ServiceManager} service manager of the new instantized module
+     */
+    private _initializeModule(moduleInstance: Module,
+            rootServiceManager: ServiceManager,
+            moduleLevelServiceManager: ServiceManager,
+            moduleManagers: ServiceManagerLookup) : ServiceManager {
+
+        let moduleServiceManager: ServiceManager = new ServiceManager(
+            moduleLevelServiceManager.getNamespaceByPath(moduleInstance.name));
+        let customizedLookup = this._buildLookupForModuleFactory(
+            moduleManagers, moduleInstance.dependencies);
+
+        moduleInstance.factoryFn(rootServiceManager, moduleServiceManager, customizedLookup);
+
+        return moduleServiceManager;
+    }
+
+    /**
+     * build service lookup based on the dependencies
+     * @param {ServiceManagerLookup} allManagers lookup with all available service managers
+     * @param {string[]} dependencies set of dependencies
+     * @return {ServiceManagerLookup} new lookup with managers defined by dependencies
+     */
+    private _buildLookupForModuleFactory(allManagers: ServiceManagerLookup, dependencies: string[]) : ServiceManagerLookup {
+        let result: ServiceManagerLookup = new ServiceManagerLookup();
+
+        for (let d of dependencies)
+            result[d] = allManagers[d];
+
+        return result;
     }
 }
 
