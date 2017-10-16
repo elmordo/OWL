@@ -3,6 +3,7 @@ module.exports = {
         "./src/index.ts",
         "./src/events.ts",
         "./src/dom.ts",
+        "./src/modules.ts",
         "./src/service_management.ts"
     ],
     output: {
