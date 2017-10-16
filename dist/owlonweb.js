@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -600,192 +600,6 @@ exports.CommonNodeList = CommonNodeList;
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(3);
-__webpack_require__(4);
-__webpack_require__(1);
-__webpack_require__(5);
-module.exports = __webpack_require__(0);
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var dom_1 = __webpack_require__(1);
-var service_management_1 = __webpack_require__(0);
-var OwlInWeb = (function () {
-    function OwlInWeb() {
-        this._serviceManager = new service_management_1.ServiceManager();
-        this._domManipulator = null;
-    }
-    OwlInWeb.prototype.addMoudle = function (name, dependencies, factory) {
-        this._moduleManager.addModule(name, dependencies, factory);
-    };
-    OwlInWeb.prototype.run = function (window, rootElement) {
-        this._domManipulator = new dom_1.DomManipulator(window, rootElement);
-        this._initializeCommonServices();
-        this._moduleManager.initializeModules(this._serviceManager);
-    };
-    Object.defineProperty(OwlInWeb.prototype, "serviceManager", {
-        get: function () {
-            return this._serviceManager;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(OwlInWeb.prototype, "domManipulator", {
-        get: function () {
-            return this._domManipulator;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    OwlInWeb.prototype._initializeCommonServices = function () {
-        var _this = this;
-        this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_APPLICATION, function () { return _this; });
-        this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_DOM_MANIPULATOR, function () { return _this._domManipulator; });
-    };
-    OwlInWeb.SERVICE_PREFIX_APPLICATION = "oow";
-    OwlInWeb.SERVICE_PREFIX_DOM_MANIPULATOR = "domManipulator";
-    return OwlInWeb;
-}());
-exports.OwlInWeb = OwlInWeb;
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Event = (function () {
-    function Event(type, data) {
-        if (data === void 0) { data = null; }
-        this.type = type;
-        this._propagate = true;
-        this.data = data;
-    }
-    Object.defineProperty(Event.prototype, "propagate", {
-        get: function () {
-            return this._propagate;
-        },
-        set: function (val) {
-            this._propagate = val;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Event.prototype, "currentTarget", {
-        get: function () {
-            return this._currentTarget;
-        },
-        set: function (val) {
-            this._currentTarget = val;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return Event;
-}());
-exports.Event = Event;
-var EventDispatcher = (function () {
-    function EventDispatcher() {
-        this._queue = new Array();
-        this._handlers = new EventHandlerLookup();
-        this._inDispatchProcess = false;
-    }
-    EventDispatcher.prototype.dispatchEvent = function (evt) {
-        this._queue.push(evt);
-        if (!this._inDispatchProcess)
-            this._processQueue();
-    };
-    EventDispatcher.prototype.addEventListener = function (eventType, callback, context) {
-        if (context === void 0) { context = null; }
-        var handlers = this._getHandlerHolder(eventType);
-        var index = handlers.length;
-        handlers.push(new EventHandler(callback, context));
-        return this._createRemover(handlers, index);
-    };
-    EventDispatcher.prototype._getHandlerHolder = function (eventType) {
-        if (this._handlers[eventType] === undefined)
-            this._handlers[eventType] = new Array();
-        return this._handlers[eventType];
-    };
-    EventDispatcher.prototype._createRemover = function (arr, index) {
-        function remover() {
-            delete arr[index];
-        }
-        return remover;
-    };
-    EventDispatcher.prototype._processQueue = function () {
-        this._inDispatchProcess = true;
-        try {
-            while (this._queue.length) {
-                var evt = this._queue.shift();
-                this._processEvent(evt);
-            }
-        }
-        finally {
-            this._inDispatchProcess = false;
-        }
-    };
-    EventDispatcher.prototype._processEvent = function (evt) {
-        var handlers = this._getHandlerHolder(evt.type);
-        handlers.forEach(function (handler) {
-            try {
-                handler.handle(evt);
-            }
-            catch (err) {
-                console.error(err);
-            }
-        });
-    };
-    return EventDispatcher;
-}());
-exports.EventDispatcher = EventDispatcher;
-var EventHandlerLookup = (function () {
-    function EventHandlerLookup() {
-    }
-    return EventHandlerLookup;
-}());
-var EventHandler = (function () {
-    function EventHandler(callback, context) {
-        if (context === void 0) { context = null; }
-        this._callback = callback;
-        this._context = context;
-    }
-    EventHandler.prototype.handle = function (event) {
-        if (this._context)
-            this._callback.call(this._context, event);
-        else
-            this._callback(event);
-    };
-    Object.defineProperty(EventHandler.prototype, "callback", {
-        get: function () {
-            return this._callback;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EventHandler.prototype, "context", {
-        get: function () {
-            return this._context;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return EventHandler;
-}());
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -957,6 +771,194 @@ var DependencyResolvingRecord = (function () {
         configurable: true
     });
     return DependencyResolvingRecord;
+}());
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(4);
+__webpack_require__(5);
+__webpack_require__(1);
+__webpack_require__(2);
+module.exports = __webpack_require__(0);
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var dom_1 = __webpack_require__(1);
+var service_management_1 = __webpack_require__(0);
+var modules_1 = __webpack_require__(2);
+var OwlInWeb = (function () {
+    function OwlInWeb() {
+        this._serviceManager = new service_management_1.ServiceManager();
+        this._moduleManager = new modules_1.ModuleManager();
+        this._domManipulator = null;
+    }
+    OwlInWeb.prototype.addMoudle = function (name, dependencies, factory) {
+        this._moduleManager.addModule(name, dependencies, factory);
+    };
+    OwlInWeb.prototype.run = function (window, rootElement) {
+        this._domManipulator = new dom_1.DomManipulator(window, rootElement);
+        this._initializeCommonServices();
+        this._moduleManager.initializeModules(this._serviceManager);
+    };
+    Object.defineProperty(OwlInWeb.prototype, "serviceManager", {
+        get: function () {
+            return this._serviceManager;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(OwlInWeb.prototype, "domManipulator", {
+        get: function () {
+            return this._domManipulator;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    OwlInWeb.prototype._initializeCommonServices = function () {
+        var _this = this;
+        this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_APPLICATION, function () { return _this; });
+        this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_DOM_MANIPULATOR, function () { return _this._domManipulator; });
+    };
+    OwlInWeb.SERVICE_PREFIX_APPLICATION = "oow";
+    OwlInWeb.SERVICE_PREFIX_DOM_MANIPULATOR = "domManipulator";
+    return OwlInWeb;
+}());
+exports.OwlInWeb = OwlInWeb;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Event = (function () {
+    function Event(type, data) {
+        if (data === void 0) { data = null; }
+        this.type = type;
+        this._propagate = true;
+        this.data = data;
+    }
+    Object.defineProperty(Event.prototype, "propagate", {
+        get: function () {
+            return this._propagate;
+        },
+        set: function (val) {
+            this._propagate = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Event.prototype, "currentTarget", {
+        get: function () {
+            return this._currentTarget;
+        },
+        set: function (val) {
+            this._currentTarget = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Event;
+}());
+exports.Event = Event;
+var EventDispatcher = (function () {
+    function EventDispatcher() {
+        this._queue = new Array();
+        this._handlers = new EventHandlerLookup();
+        this._inDispatchProcess = false;
+    }
+    EventDispatcher.prototype.dispatchEvent = function (evt) {
+        this._queue.push(evt);
+        if (!this._inDispatchProcess)
+            this._processQueue();
+    };
+    EventDispatcher.prototype.addEventListener = function (eventType, callback, context) {
+        if (context === void 0) { context = null; }
+        var handlers = this._getHandlerHolder(eventType);
+        var index = handlers.length;
+        handlers.push(new EventHandler(callback, context));
+        return this._createRemover(handlers, index);
+    };
+    EventDispatcher.prototype._getHandlerHolder = function (eventType) {
+        if (this._handlers[eventType] === undefined)
+            this._handlers[eventType] = new Array();
+        return this._handlers[eventType];
+    };
+    EventDispatcher.prototype._createRemover = function (arr, index) {
+        function remover() {
+            delete arr[index];
+        }
+        return remover;
+    };
+    EventDispatcher.prototype._processQueue = function () {
+        this._inDispatchProcess = true;
+        try {
+            while (this._queue.length) {
+                var evt = this._queue.shift();
+                this._processEvent(evt);
+            }
+        }
+        finally {
+            this._inDispatchProcess = false;
+        }
+    };
+    EventDispatcher.prototype._processEvent = function (evt) {
+        var handlers = this._getHandlerHolder(evt.type);
+        handlers.forEach(function (handler) {
+            try {
+                handler.handle(evt);
+            }
+            catch (err) {
+                console.error(err);
+            }
+        });
+    };
+    return EventDispatcher;
+}());
+exports.EventDispatcher = EventDispatcher;
+var EventHandlerLookup = (function () {
+    function EventHandlerLookup() {
+    }
+    return EventHandlerLookup;
+}());
+var EventHandler = (function () {
+    function EventHandler(callback, context) {
+        if (context === void 0) { context = null; }
+        this._callback = callback;
+        this._context = context;
+    }
+    EventHandler.prototype.handle = function (event) {
+        if (this._context)
+            this._callback.call(this._context, event);
+        else
+            this._callback(event);
+    };
+    Object.defineProperty(EventHandler.prototype, "callback", {
+        get: function () {
+            return this._callback;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EventHandler.prototype, "context", {
+        get: function () {
+            return this._context;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return EventHandler;
 }());
 
 
