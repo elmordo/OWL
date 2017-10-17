@@ -1,11 +1,11 @@
 
-import { IRenderer, RenderResult, EntryNodeLookup } from "../../rendering"
-import { DomManipulator, CommonHtmlNode, CommonHtmlText } from "../../dom"
+import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../rendering"
+import { DomManipulator, CommonHtmlNode, CommonHtmlText, CommonHtmlElement } from "../../dom"
 import { ControllerBase, ComponentManager, ComponentDescription } from "../../component"
 import { ServiceManager, ServiceNamespace } from "../../service_management"
 
 
-export class Renderer implements IRenderer {
+export class Renderer extends AbstractRenderer {
 
     static BUTTON_TEMPLATE = "<button type='button'>button</button>";
 
@@ -21,6 +21,12 @@ export class Renderer implements IRenderer {
         return result;
     }
 
+    public getOptions(originalNode: CommonHtmlElement) : Object {
+        let result = super.getOptions(originalNode);
+        result["label"] = this.getAttributeValue(originalNode, "label", "button");
+
+        return result;
+    }
 }
 
 

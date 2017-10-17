@@ -43,7 +43,17 @@ export abstract class AbstractRenderer implements IRenderer {
 
         if (originalNode instanceof CommonHtmlElement) {
             let element = <CommonHtmlElement>originalNode;
+            result["id"] = this.getAttributeValue(originalNode, "id");
         }
+
+        return result;
+    }
+
+    protected getAttributeValue(element: CommonHtmlElement, name: string, defaultValue: string=null) : string {
+        let result: string = defaultValue;
+
+        if (element.attributes.has(name))
+            result = element.attributes.get("name").value;
 
         return result;
     }
