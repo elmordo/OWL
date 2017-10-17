@@ -20,10 +20,16 @@ export class DomManipulator {
 
     public createNewFragment(html: string) : CommonHtmlElement {
         let parser: DOMParser = new DOMParser();
-        let fragment: DocumentFragment = parser.parseFromString(html, "text/xml");
-        let element: HTMLElement = <HTMLElement>fragment.firstChild;
+        let fragment: Document = parser.parseFromString(html, "text/html");
+        let element: HTMLElement = <HTMLElement>fragment.body.firstChild;
 
         return <CommonHtmlElement>this.mapNode(element);
+    }
+
+    public createAttribute(name: string, value:string=null) : CommonHtmlAttribute {
+        let attr = this.rootElement.element.ownerDocument.createAttribute(name);
+        attr.value = value;
+        return <CommonHtmlAttribute>this.mapNode(attr);
     }
 
     public mapNode(node:Node) : CommonHtmlNode {
@@ -362,9 +368,42 @@ class MappedElementCache {
 }
 
 
-class AttributeCache {
-    [key: string]: CommonHtmlAttribute;
+class AttributeManager {
+
+    private _attributes: NamedNodeMap;
+
+    private _manipulator: DomManipulator;
+
+    constructor(attributes: NamedNodeMap, manipulator: DomManipulator) {
+        this._attributes = attributes;
+        this._manipulator = manipulator;
+    }
+
+    public get(name: string) : CommonHtmlAttribute {
+        let attr: Node = this._attributes.getNamedItem(name);
+
+        if (!attr)
+            throw new Error("Attribute '" + name + "' is not set");
+
+        return <CommonHtmlAttribute>this._manipulator.mapNode(attr);
+    }
+
+    public has(name: string) : boolean {
+        return !!this._attributes.getNamedItem(name);
+    }
+
+    public set(name: string, value: string) : void {
+        let attr = this._attributes.getNamedItem(name);
+
+        if (attr)
+            attr.value = value;
+        else {
+            attr = this._manipulator.createAttribute(name, value).attribute;
+            this._attributes.setNamedItem(attr);
+        }
+    }
 }
+
 
 export class CommonHtmlNode {
 
@@ -390,14 +429,22 @@ export class CommonHtmlNode {
     }
 }
 
+
 export class CommonHtmlElement extends CommonHtmlNode {
+
+    private _attributes: AttributeManager = null;
 
     constructor(node: Node, manipulator: DomManipulator) {
         super(node, manipulator);
+        this._attributes = new AttributeManager(this.element.attributes, manipulator);
     }
 
     public append(node: CommonHtmlNode) : void {
         this.element.appendChild(node.node);
+    }
+
+    get attributes(): AttributeManager {
+        return this._attributes;
     }
 
     get element(): HTMLElement {
@@ -406,7 +453,7 @@ export class CommonHtmlElement extends CommonHtmlNode {
 
     get chidlren(): CommonNodeList {
         let children: NodeList = this.element.childNodes;
-        let result: CommonNodeList = new CommonNodeList();
+        let result: CommonNodeList = CommonNodeList.createInstance();
 
         for (var i = 0; i < children.length; ++i) {
             let node: Node = children.item(i);
@@ -545,14 +592,22 @@ export class CommonHtmlComment extends CommonHtmlNode {
 
 export class CommonNodeList extends Array<CommonHtmlNode> {
 
-    get first() : CommonHtmlNode {
+    private constructor() {
+        super();
+    }
+
+    public static createInstance(): CommonNodeList {
+        return Object.create(CommonNodeList.prototype);
+    }
+
+    public getFirst() : CommonHtmlNode {
         if (this.length == 0)
             throw new Error("The list is empty");
 
         return this[0];
     }
 
-    get last() : CommonHtmlNode {
+    public getLast() : CommonHtmlNode {
         if (this.length == 0)
             throw new Error("The list is empty");
         return this[this.length - 1];

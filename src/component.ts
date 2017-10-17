@@ -1,7 +1,7 @@
 
 import { ServiceManager } from "./service_management";
 import { IRenderer, RenderResult } from "./rendering";
-import { DomManipulator } from "./dom";
+import { DomManipulator, CommonHtmlNode } from "./dom";
 
 /**
  * describe component and hold information required to create
@@ -161,7 +161,7 @@ export class ComponentManager {
      * @throws Error component is not registered
      */
     private _assertExists(name: string) : void {
-        if (this._components[name])
+        if (!this._components[name])
             throw new Error("Component '" + name + "' does not exist");
     }
 
@@ -181,7 +181,7 @@ export class ControllerBase {
 
     static OPT_ID = "id";
 
-    protected _html: RenderResult;
+    protected _view: RenderResult;
 
     private _id: string;
 
@@ -193,12 +193,16 @@ export class ControllerBase {
      * @param {Object} options options to setup
      */
     public setup(renderedContent: RenderResult, options: Object) : void {
-        this._html = renderedContent;
+        this._view = renderedContent;
         this._id = options[ControllerBase.OPT_ID] || null;
     }
 
     get id(): string {
         return this._id;
+    }
+
+    get view(): CommonHtmlNode {
+        return this._view.rootNode;
     }
 }
 

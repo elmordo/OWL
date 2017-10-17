@@ -1,5 +1,5 @@
 
-import { DomManipulator, CommonHtmlNode } from "./dom";
+import { DomManipulator, CommonHtmlNode, CommonHtmlElement } from "./dom";
 
 /**
  * interface for all renderers
@@ -13,6 +13,40 @@ export interface IRenderer {
      * @return {RenderResult} render result
      */
     render(manipulator: DomManipulator, options: Object): RenderResult;
+
+    /**
+     * read options from the original node
+     * @param {CommonHtmlNode} originalNode original node
+     * @return {Object} parsed options
+     */
+    getOptions(originalNode: CommonHtmlNode): Object;
+}
+
+
+export abstract class AbstractRenderer implements IRenderer {
+
+    /**
+     * render component to dom
+     * @param {DomManipulator} manipulator dom manipulator
+     * @param {Object} options rendering options
+     * @return {RenderResult} render result
+     */
+    abstract render(manipulator: DomManipulator, options: Object): RenderResult;
+
+    /**
+     * read options from the original node
+     * @param {CommonHtmlNode} originalNode original node
+     * @return {Object} parsed options
+     */
+    public getOptions(originalNode: CommonHtmlNode): Object {
+        let result = new Object();
+
+        if (originalNode instanceof CommonHtmlElement) {
+            let element = <CommonHtmlElement>originalNode;
+        }
+
+        return result;
+    }
 }
 
 

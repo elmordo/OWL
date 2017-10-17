@@ -48,7 +48,7 @@ describe("Test service manager", () => {
 
     it("try to create instance of the not shared service", () => {
         let sm = new ServiceManager();
-        let path = "ns1.service";
+        let path = "ns1.subns.subsubns.service";
 
         sm.registerService(path, () => { return new Foo(); }, false);
 

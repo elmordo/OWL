@@ -15,7 +15,7 @@ export class Renderer implements IRenderer {
         let button = manipulator.createNewFragment(Renderer.BUTTON_TEMPLATE);
         let entryNodes = new EntryNodeLookup();
 
-        entryNodes["label"] = button.chidlren.first;
+        entryNodes["label"] = button.chidlren.getFirst();
 
         let result: RenderResult = new RenderResult(button, entryNodes);
         return result;
@@ -58,4 +58,5 @@ export function register(cm: ComponentManager, sm: ServiceManager): void {
 
     let dsc: ComponentDescription = new ComponentDescription("owlSimpleButton", rendererName, controllerName);
     cm.registerComponent(dsc);
+    console.log("reg");
 }

@@ -210,10 +210,9 @@ export class ServiceManager {
      */
     private _getNamespaceByPathArray(pathArray: string[]) : ServiceNamespace {
         let current: ServiceNamespace = this._rootNamespace;
-
-        pathArray.forEach(function (nsName: string) {
+        pathArray.forEach((nsName: string) => {
             current = current.getNamespace(nsName);
-        }, this);
+        });
 
         return current;
     }
