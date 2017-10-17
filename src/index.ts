@@ -3,7 +3,7 @@ import { DomManipulator } from "./dom";
 import { ServiceManager } from "./service_management";
 import { ModuleManager, ModuleFactoryFn } from "./modules"
 import { register } from "./components/register"
-import { ComponentFactory} from "./component"
+import { ComponentFactory, ComponentInserter } from "./component"
 
 
 export class OwlInWeb {
@@ -26,6 +26,8 @@ export class OwlInWeb {
 
     private _window: Window;
 
+    private _componentInserter: ComponentInserter;
+
     constructor() {
         this._serviceManager = new ServiceManager();
         this._moduleManager = new ModuleManager();
@@ -42,7 +44,7 @@ export class OwlInWeb {
         this._window = window;
 
         this._initialize();
-        this._moduleManager.initializeModules(this._serviceManager);
+        this._componentInserter.insertComponents();
     }
 
     public get serviceManager(): ServiceManager {
@@ -69,11 +71,13 @@ export class OwlInWeb {
         this._initializeMembers();
         this._initializeCommonServices();
         this._initializeComponents();
+        this._moduleManager.initializeModules(this._serviceManager);
     }
 
     private _initializeMembers() : void {
         this._domManipulator = new DomManipulator(this._window, this._rootElement);
         this._componentFactory = new ComponentFactory(this._serviceManager, this._domManipulator);
+        this._componentInserter = new ComponentInserter(this._componentFactory, this._rootElement);
     }
 
     private _initializeCommonServices() : void {

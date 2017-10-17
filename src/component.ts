@@ -1,7 +1,7 @@
 
 import { ServiceManager } from "./service_management";
 import { IRenderer, RenderResult } from "./rendering";
-import { DomManipulator, CommonHtmlNode } from "./dom";
+import { DomManipulator, CommonHtmlNode, CommonHtmlElement } from "./dom";
 
 /**
  * describe component and hold information required to create
@@ -125,26 +125,20 @@ export class ComponentFactory {
         this._components[component.name] = component;
     }
 
-    public createComponentInstance(name: string, options: Object) : ControllerBase {
+    public createComponentInstance(name: string, element: HTMLElement) : ControllerBase {
         this._assertExists(name);
 
         let componentDsc: ComponentDescription = this._components[name];
-        let renderedContent: RenderResult = this._renderComponent(componentDsc, options);
+        let renderer = this._getRenderer(componentDsc);
+        let options = renderer.getOptions(new CommonHtmlElement(element, this._domManipulator));
+        let renderedContent: RenderResult = renderer.render(this._domManipulator, options);
 
         return this._createController(componentDsc, options, renderedContent);
     }
 
-    /**
-     * render component HTML
-     * @param {ComponentDescription} description description of the component to render
-     * @param {Object} options options for renderer
-     * @return {RenderResult} result of rendering process
-     */
-    private _renderComponent(description: ComponentDescription, options: Object) : RenderResult {
+    private _getRenderer(description: ComponentDescription) : IRenderer {
         let rendererName: string = description.rendererName;
-        let renderer: IRenderer = <IRenderer>this._serviceManager.getServiceByPath(rendererName);
-
-        return renderer.render(this._domManipulator, options);
+        return <IRenderer>this._serviceManager.getServiceByPath(rendererName);
     }
 
     private _createController(description: ComponentDescription, options: Object, rendered: RenderResult) : ControllerBase {
@@ -173,6 +167,60 @@ export class ComponentFactory {
     private _assertNotExists(name: string) : void {
         if (this._components[name])
             throw new Error("Component '" + name + "' is already registered");
+    }
+}
+
+
+/**
+ * replace component placeholders in dom by real rendered components
+ */
+export class ComponentInserter {
+
+    private _componentFactory: ComponentFactory;
+
+    private _rootElement: HTMLElement;
+
+    constructor(componentFactory: ComponentFactory, rootElement: HTMLElement) {
+        this._componentFactory = componentFactory;
+        this._rootElement = rootElement;
+    }
+
+    public insertComponents() : void {
+        let walker: TreeWalker = this._createWalker();
+
+        while(walker.nextNode())
+            this._processElement(<HTMLElement>walker.currentNode);8
+    }
+
+    private _createWalker() : TreeWalker {
+        let document = this._rootElement.ownerDocument;
+        let filter = {
+            acceptNode: (node: Node): number => {
+                let element: HTMLElement = <HTMLElement>node;
+
+                return (element.tagName.substr(0, 4) == "OWL:") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+            }
+        };
+        return document.createTreeWalker(this._rootElement, NodeFilter.SHOW_ELEMENT, filter);
+    }
+
+    private _processElement(element: HTMLElement) : void {
+        // get name
+        let name = this._getComponentName(element);
+        let componentController = this._componentFactory.createComponentInstance(name, element);
+
+        element.parentElement.replaceChild(componentController.view.node, element);
+    }
+
+    private _getComponentName(element: HTMLElement) : string {
+        let nameParts = element.tagName.substr(4).toLowerCase().split("-");
+        let result = nameParts[0];
+
+        for (var i = 1; i < nameParts.length; ++i) {
+            result += nameParts[i].charAt(0).toUpperCase() + nameParts[i].substr(1);
+        }
+
+        return result;
     }
 }
 

@@ -64,5 +64,4 @@ export function register(cm: ComponentFactory, sm: ServiceManager): void {
 
     let dsc: ComponentDescription = new ComponentDescription("owlSimpleButton", rendererName, controllerName);
     cm.registerComponent(dsc);
-    console.log("reg");
 }
