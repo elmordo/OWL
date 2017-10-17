@@ -1,7 +1,7 @@
 
 import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../rendering"
 import { DomManipulator, CommonHtmlNode, CommonHtmlText, CommonHtmlElement } from "../../dom"
-import { ControllerBase, ComponentManager, ComponentDescription } from "../../component"
+import { ControllerBase, ComponentFactory, ComponentDescription } from "../../component"
 import { ServiceManager, ServiceNamespace } from "../../service_management"
 
 
@@ -53,7 +53,7 @@ export class Controller extends ControllerBase {;
 }
 
 
-export function register(cm: ComponentManager, sm: ServiceManager): void {
+export function register(cm: ComponentFactory, sm: ServiceManager): void {
     let baseNs = "owl.component.button.simple";
 
     let rendererName: string = baseNs + ".renderer";

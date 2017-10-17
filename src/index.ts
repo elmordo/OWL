@@ -3,7 +3,7 @@ import { DomManipulator } from "./dom";
 import { ServiceManager } from "./service_management";
 import { ModuleManager, ModuleFactoryFn } from "./modules"
 import { register } from "./components/register"
-import { ComponentManager} from "./component"
+import { ComponentFactory} from "./component"
 
 
 export class OwlInWeb {
@@ -20,7 +20,7 @@ export class OwlInWeb {
 
     private _moduleManager: ModuleManager;
 
-    private _componentManager: ComponentManager;
+    private _componentFactory: ComponentFactory;
 
     private _rootElement: HTMLElement;
 
@@ -30,7 +30,7 @@ export class OwlInWeb {
         this._serviceManager = new ServiceManager();
         this._moduleManager = new ModuleManager();
         this._domManipulator = null;
-        this._componentManager = null;
+        this._componentFactory = null;
     }
 
     public addMoudle(name: string, dependencies: string[], factory: ModuleFactoryFn) : void {
@@ -53,8 +53,8 @@ export class OwlInWeb {
         return this._domManipulator;
     }
 
-    public get componentManager(): ComponentManager {
-        return this._componentManager;
+    public get componentManager(): ComponentFactory {
+        return this._componentFactory;
     }
 
     public get rootElement(): HTMLElement {
@@ -73,16 +73,16 @@ export class OwlInWeb {
 
     private _initializeMembers() : void {
         this._domManipulator = new DomManipulator(this._window, this._rootElement);
-        this._componentManager = new ComponentManager(this._serviceManager, this._domManipulator);
+        this._componentFactory = new ComponentFactory(this._serviceManager, this._domManipulator);
     }
 
     private _initializeCommonServices() : void {
         this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_APPLICATION, () => { return this; });
         this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_DOM_MANIPULATOR, () => { return this._domManipulator; });
-        this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_COMPONENT_MANAGER, () => { return this._componentManager; });
+        this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_COMPONENT_MANAGER, () => { return this._componentFactory; });
     }
 
     private _initializeComponents() : void {
-        register(this._componentManager, this._serviceManager);
+        register(this._componentFactory, this._serviceManager);
     }
 }

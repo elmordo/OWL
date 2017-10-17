@@ -84,7 +84,7 @@ export class ComponentDescription {
 /**
  * manage component descriptions and create new component instances
  */
-export class ComponentManager {
+export class ComponentFactory {
 
     /**
      * set of registered components
