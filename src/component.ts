@@ -188,9 +188,14 @@ export class ComponentInserter {
 
     public insertComponents() : void {
         let walker: TreeWalker = this._createWalker();
+        let currentNode:Node = walker.nextNode();
 
-        while(walker.nextNode())
-            this._processElement(<HTMLElement>walker.currentNode);8
+        while(currentNode) {
+            let nodeToProcess: Node = currentNode;
+            currentNode = walker.nextNode();
+
+            this._processElement(<HTMLElement>nodeToProcess);
+        }
     }
 
     private _createWalker() : TreeWalker {
