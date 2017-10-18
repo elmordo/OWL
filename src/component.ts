@@ -130,8 +130,9 @@ export class ComponentFactory {
 
         let componentDsc: ComponentDescription = this._components[name];
         let renderer = this._getRenderer(componentDsc);
-        let options = renderer.getOptions(new CommonHtmlElement(element, this._domManipulator));
-        let renderedContent: RenderResult = renderer.render(this._domManipulator, options);
+        let mappedElement = new CommonHtmlElement(element, this._domManipulator);
+        let options = renderer.getOptions(mappedElement);
+        let renderedContent: RenderResult = renderer.render(mappedElement, this._domManipulator, options);
 
         return this._createController(componentDsc, options, renderedContent);
     }

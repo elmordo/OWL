@@ -8,11 +8,12 @@ export interface IRenderer {
 
     /**
      * render component to dom
+     * @param {CommonHtmlElement} originalNode the original node
      * @param {DomManipulator} manipulator dom manipulator
      * @param {Object} options rendering options
      * @return {RenderResult} render result
      */
-    render(manipulator: DomManipulator, options: Object): RenderResult;
+    render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object): RenderResult;
 
     /**
      * read options from the original node
@@ -27,11 +28,12 @@ export abstract class AbstractRenderer implements IRenderer {
 
     /**
      * render component to dom
+     * @param {CommonHtmlElement} originalNode the original node
      * @param {DomManipulator} manipulator dom manipulator
      * @param {Object} options rendering options
      * @return {RenderResult} render result
      */
-    abstract render(manipulator: DomManipulator, options: Object): RenderResult;
+    abstract render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object): RenderResult;
 
     /**
      * read options from the original node
@@ -53,7 +55,7 @@ export abstract class AbstractRenderer implements IRenderer {
         let result: string = defaultValue;
 
         if (element.attributes.has(name))
-            result = element.attributes.get("name").value;
+            result = element.attributes.get(name).value;
 
         return result;
     }

@@ -11,7 +11,7 @@ export class Renderer extends AbstractRenderer {
 
     static ENTRY_LABEL = "label";
 
-    public render(manipulator: DomManipulator, options: Object) : RenderResult {
+    public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
         let button = manipulator.createNewFragment(Renderer.BUTTON_TEMPLATE);
         let entryNodes = new EntryNodeLookup();
 
@@ -41,6 +41,8 @@ export class Controller extends ControllerBase {;
     public setup(renderedContent: RenderResult, options: Object) : void {
         super.setup(renderedContent, options);
         this._label = <CommonHtmlText>renderedContent.getEntry(Renderer.ENTRY_LABEL);
+
+        this.label = options["label"] || this.label;
     }
 
     get label(): string {
