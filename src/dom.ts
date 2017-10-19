@@ -404,6 +404,25 @@ class AttributeManager {
     }
 }
 
+class StyleManager {
+
+    private _styles: CSSStyleDeclaration;
+
+    private _classes: DOMTokenList;
+
+    constructor(element: HTMLElement) {
+        this._styles = element.style;
+        this._classes = element.classList;
+    }
+
+    public set(name: string, val: string): void {
+        this._styles[name] = val;
+    }
+
+    public get(name: string): string {
+        return this._styles[name];
+    }
+}
 
 export class CommonHtmlNode {
 
@@ -434,9 +453,12 @@ export class CommonHtmlElement extends CommonHtmlNode {
 
     private _attributes: AttributeManager = null;
 
+    private _styleManager: StyleManager = null;
+
     constructor(node: Node, manipulator: DomManipulator) {
         super(node, manipulator);
         this._attributes = new AttributeManager(this.element.attributes, manipulator);
+        this._styleManager = new StyleManager(this.element);
     }
 
     public append(node: CommonHtmlNode) : void {
@@ -445,6 +467,10 @@ export class CommonHtmlElement extends CommonHtmlNode {
 
     get attributes(): AttributeManager {
         return this._attributes;
+    }
+
+    get styles(): StyleManager {
+        return this._styleManager;
     }
 
     get element(): HTMLElement {

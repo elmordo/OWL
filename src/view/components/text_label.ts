@@ -7,24 +7,17 @@ import { ServiceManager, ServiceNamespace } from "../../service_management"
 
 export class Renderer extends AbstractRenderer {
 
-    static BUTTON_TEMPLATE = "<button type='button'>button</button>";
+    static LABEL_TEMPLATE = "<span>label</span>";
 
     static ENTRY_LABEL = "label";
 
     public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
-        let button = manipulator.createNewFragment(Renderer.BUTTON_TEMPLATE);
+        let button = manipulator.createNewFragment(Renderer.LABEL_TEMPLATE);
         let entryNodes = new EntryNodeLookup();
 
         entryNodes["label"] = button.chidlren.getFirst();
 
         let result: RenderResult = new RenderResult(button, entryNodes);
-        return result;
-    }
-
-    public getOptions(originalNode: CommonHtmlElement) : Object {
-        let result = super.getOptions(originalNode);
-        result["label"] = this.getAttributeValue(originalNode, "label", "button");
-
         return result;
     }
 }
@@ -56,7 +49,7 @@ export class Controller extends ControllerBase {;
 
 
 export function register(cm: ComponentFactory, sm: ServiceManager): void {
-    let baseNs = "owl.component.button.simple";
+    let baseNs = "owl.component.text_label";
 
     let rendererName: string = baseNs + ".renderer";
     let controllerName: string = baseNs + ".controller";
@@ -64,6 +57,6 @@ export function register(cm: ComponentFactory, sm: ServiceManager): void {
     sm.registerService(rendererName, () => { return new Renderer(); });
     sm.registerService(controllerName, () => { return new Controller(); });
 
-    let dsc: ComponentDescription = new ComponentDescription("owlSimpleButton", rendererName, controllerName);
+    let dsc: ComponentDescription = new ComponentDescription("owlTextLabel", rendererName, controllerName);
     cm.registerComponent(dsc);
 }

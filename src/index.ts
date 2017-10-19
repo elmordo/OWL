@@ -2,7 +2,7 @@
 import { DomManipulator } from "./dom";
 import { ServiceManager } from "./service_management";
 import { ModuleManager, ModuleFactoryFn } from "./modules"
-import { register } from "./components/register"
+import { register } from "./view/components/register"
 import { ComponentFactory, ComponentInserter } from "./component"
 
 
