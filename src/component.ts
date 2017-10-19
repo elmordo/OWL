@@ -192,9 +192,8 @@ export class ComponentInserter {
 
         while(currentNode) {
             let nodeToProcess: Node = currentNode;
+            walker.currentNode = this._processElement(<HTMLElement>nodeToProcess);
             currentNode = walker.nextNode();
-
-            this._processElement(<HTMLElement>nodeToProcess);
         }
     }
 
@@ -210,12 +209,14 @@ export class ComponentInserter {
         return document.createTreeWalker(this._rootElement, NodeFilter.SHOW_ELEMENT, filter);
     }
 
-    private _processElement(element: HTMLElement) : void {
+    private _processElement(element: HTMLElement) : Node {
         // get name
         let name = this._getComponentName(element);
         let componentController = this._componentFactory.createComponentInstance(name, element);
 
         element.parentElement.replaceChild(componentController.view.node, element);
+
+        return componentController.view.node;
     }
 
     private _getComponentName(element: HTMLElement) : string {
