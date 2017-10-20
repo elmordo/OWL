@@ -4,6 +4,7 @@ import { ServiceManager } from "./service_management";
 import { ModuleManager, ModuleFactoryFn } from "./modules"
 import { register } from "./view/components/register"
 import { ComponentFactory, ComponentInserter } from "./component"
+import { factory as sizerFactory } from "./view/sizer/factory"
 
 
 export class OwlInWeb {
@@ -13,6 +14,8 @@ export class OwlInWeb {
     static SERVICE_PREFIX_DOM_MANIPULATOR: string = "owl.domManipulator";
 
     static SERVICE_PREFIX_COMPONENT_MANAGER: string = "owl.componentManager";
+
+    static SERVICE_PREFIX_SIZER_MANAGER: string = "owl.sizerManager";
 
     private _serviceManager: ServiceManager;
 
@@ -84,6 +87,7 @@ export class OwlInWeb {
         this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_APPLICATION, () => { return this; });
         this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_DOM_MANIPULATOR, () => { return this._domManipulator; });
         this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_COMPONENT_MANAGER, () => { return this._componentFactory; });
+        this._serviceManager.registerService(OwlInWeb.SERVICE_PREFIX_SIZER_MANAGER, () => { return sizerFactory(); });
     }
 
     private _initializeComponents() : void {
