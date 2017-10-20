@@ -2,6 +2,8 @@
 import { ServiceManager } from "./service_management";
 import { IRenderer, RenderResult } from "./rendering";
 import { DomManipulator, CommonHtmlNode, CommonHtmlElement } from "./dom";
+import { ISizer, SizerFactory } from "./view/sizer/base"
+import { EventDispatcher } from "./events"
 
 /**
  * describe component and hold information required to create
@@ -146,6 +148,7 @@ export class ComponentFactory {
         let controllerName: string = description.controllerName;
 
         let controller: ControllerBase = <ControllerBase>this._serviceManager.getServiceByPath(controllerName);
+        controller.serviceManager = this._serviceManager;
         controller.setup(rendered, options);
         return controller;
     }
@@ -215,6 +218,7 @@ export class ComponentInserter {
         let componentController = this._componentFactory.createComponentInstance(name, element);
 
         element.parentElement.replaceChild(componentController.view.node, element);
+        componentController.repaint();
 
         return componentController.view.node;
     }
@@ -232,7 +236,7 @@ export class ComponentInserter {
 }
 
 
-export class ControllerBase {
+export class ControllerBase extends EventDispatcher {
 
     static OPT_ID = "id";
 
@@ -263,6 +267,8 @@ export class ControllerBase {
     private _id: string;
 
     constructor() {
+        super()
+
         this._internalId = ControllerBase._NEXT_ID++;
         this._view = null;
         this._serviceManager = null;
@@ -275,6 +281,12 @@ export class ControllerBase {
     public setup(renderedContent: RenderResult, options: Object) : void {
         this._view = renderedContent;
         this._id = options[ControllerBase.OPT_ID] || null;
+    }
+
+    /**
+     * cause element repaint
+     */
+    public repaint() : void {
     }
 
     /**
@@ -308,6 +320,31 @@ export class ControllerBase {
     set serviceManager(val: ServiceManager) {
         this._serviceManager = val;
     }
+}
+
+export class SizeableComponent extends ControllerBase {
+
+    private _sizer: ISizer;
+
+    public setup(renderedContent: RenderResult, options: Object) : void {
+        super.setup(renderedContent, options);
+        this._setupSizer(options);
+    }
+
+    public repaint() : void {
+        this._sizer.updateSize();
+    }
+
+    public _setupSizer(options: Object) : void {
+        let sizerType: string = options["sizer"];
+        let sizerFactory: SizerFactory = <SizerFactory>this.serviceManager.getServiceByPath("owl.sizerFactory");
+        let sizer = sizerFactory.getSizer(sizerType);
+
+        sizer.setup(this._view.rootNode, options);
+        this._sizer = sizer;
+        this._sizer.updateSize();
+    }
+
 }
 
 

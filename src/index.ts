@@ -16,7 +16,7 @@ export class OwlWebLib {
 
     static SERVICE_PREFIX_COMPONENT_MANAGER: string = "owl.componentManager";
 
-    static SERVICE_PREFIX_SIZER_MANAGER: string = "owl.sizerManager";
+    static SERVICE_PREFIX_SIZER_MANAGER: string = "owl.sizerFactory";
 
     private _serviceManager: ServiceManager;
 
