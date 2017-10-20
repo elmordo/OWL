@@ -29,7 +29,7 @@ export interface ISizer {
 /**
  * manage available types of the sizers
  */
-export class SizerManager {
+export class SizerFactory {
 
     /**
      * set of sizers

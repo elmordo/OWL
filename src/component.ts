@@ -277,18 +277,34 @@ export class ControllerBase {
         this._id = options[ControllerBase.OPT_ID] || null;
     }
 
+    /**
+     * get id of the component
+     * @return {string} id of the component
+     */
     get id(): string {
         return this._id;
     }
 
+    /**
+     * get view representation of the component
+     * @return {CommonHtmlNode} view representation of the component
+     */
     get view(): CommonHtmlNode {
         return this._view.rootNode;
     }
 
+    /**
+     * service manager getter
+     * @return {ServiceManager} injected service manager
+     */
     get serviceManager(): ServiceManager {
         return this._serviceManager;
     }
 
+    /**
+     * service manager setter
+     * @param {ServiceManager} val new service manager
+     */
     set serviceManager(val: ServiceManager) {
         this._serviceManager = val;
     }

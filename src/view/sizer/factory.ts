@@ -1,7 +1,12 @@
-import { SizerManager, FitParent, FitWindow } from "./base"
+import { SizerFactory, FitParent, FitWindow } from "./base"
 
-export function factory(): SizerManager {
-    let manager = new SizerManager();
+
+/**
+ * create manager of the sizer
+ * @return {SizerManager} sizer manager
+ */
+export function sizerFactory(): SizerFactory {
+    let manager = new SizerFactory();
 
     manager.addSizer("fitParent", () => { return new FitParent(); });
     manager.addSizer("fitWindow", () => { return new FitWindow(); });

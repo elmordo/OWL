@@ -4,7 +4,8 @@ import { ServiceManager } from "./service_management";
 import { ModuleManager, ModuleFactoryFn } from "./modules"
 import { register } from "./view/components/register"
 import { ComponentFactory, ComponentInserter } from "./component"
-import { factory as sizerFactory } from "./view/sizer/factory"
+import { sizerFactory } from "./view/sizer/factory"
+import { SizerFactory } from "./view/sizer/base"
 
 
 export class OwlWebLib {
@@ -31,9 +32,12 @@ export class OwlWebLib {
 
     private _componentInserter: ComponentInserter;
 
+    private _sizerFactory: SizerFactory;
+
     constructor() {
         this._serviceManager = new ServiceManager();
         this._moduleManager = new ModuleManager();
+        this._sizerFactory = sizerFactory();
         this._domManipulator = null;
         this._componentFactory = null;
     }
@@ -87,7 +91,7 @@ export class OwlWebLib {
         this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_APPLICATION, () => { return this; });
         this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_DOM_MANIPULATOR, () => { return this._domManipulator; });
         this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_COMPONENT_MANAGER, () => { return this._componentFactory; });
-        this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_SIZER_MANAGER, () => { return sizerFactory(); });
+        this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_SIZER_MANAGER, () => { return this._sizerFactory; });
     }
 
     private _initializeComponents() : void {
