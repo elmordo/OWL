@@ -236,11 +236,36 @@ export class ControllerBase {
 
     static OPT_ID = "id";
 
+    static _NEXT_ID = 1;
+
+    /**
+     * internal identifier of the component
+     * @type {number}
+     */
+    private _internalId: number;
+
+    /**
+     * view representation of the component
+     * @type {RenderResult}
+     */
     protected _view: RenderResult;
 
+    /**
+     * instance of service manager to use
+     * @type {ServiceManager}
+     */
+    protected _serviceManager: ServiceManager;
+
+    /**
+     * public identifier of the component
+     * @type {string}
+     */
     private _id: string;
 
     constructor() {
+        this._internalId = ControllerBase._NEXT_ID++;
+        this._view = null;
+        this._serviceManager = null;
     }
 
     /**
@@ -258,6 +283,14 @@ export class ControllerBase {
 
     get view(): CommonHtmlNode {
         return this._view.rootNode;
+    }
+
+    get serviceManager(): ServiceManager {
+        return this._serviceManager;
+    }
+
+    set serviceManager(val: ServiceManager) {
+        this._serviceManager = val;
     }
 }
 
