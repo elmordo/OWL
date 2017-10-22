@@ -23,7 +23,7 @@ export class Renderer extends AbstractRenderer {
 
     public getOptions(originalNode: CommonHtmlElement) : Object {
         let result = super.getOptions(originalNode);
-        result["label"] = this.getAttributeValue(originalNode, "label", "button");
+        result["label"] = this._getAttributeValue(originalNode, "label", "button");
 
         return result;
     }

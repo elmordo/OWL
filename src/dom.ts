@@ -379,8 +379,11 @@ class AttributeManager {
 
     private _manipulator: DomManipulator;
 
-    constructor(attributes: NamedNodeMap, manipulator: DomManipulator) {
-        this._attributes = attributes;
+    private _originalElement: Element;
+
+    constructor(element: Element, manipulator: DomManipulator) {
+        this._attributes = element.attributes;
+        this._originalElement = element;
         this._manipulator = manipulator;
     }
 
@@ -403,8 +406,7 @@ class AttributeManager {
         if (attr)
             attr.value = value;
         else {
-            attr = this._manipulator.createAttribute(name, value).attribute;
-            this._attributes.setNamedItem(attr);
+            this._originalElement.setAttribute(name, value);
         }
     }
 }
@@ -462,7 +464,7 @@ export class CommonHtmlElement extends CommonHtmlNode {
 
     constructor(node: Node, manipulator: DomManipulator) {
         super(node, manipulator);
-        this._attributes = new AttributeManager(this.element.attributes, manipulator);
+        this._attributes = new AttributeManager(this.element, manipulator);
         this._styleManager = new StyleManager(this.element);
     }
 

@@ -27,7 +27,7 @@ export class Renderer extends AbstractRenderer {
      */
     public getOptions(originalNode: CommonHtmlNode): Object {
         let result: Object = super.getOptions(originalNode);
-        result["sizer"] = super.getAttributeValue(<CommonHtmlElement>originalNode, "sizer");
+        result["sizer"] = super._getAttributeValue(<CommonHtmlElement>originalNode, "sizer");
 
         return result;
     }

@@ -22,7 +22,7 @@ export class Renderer extends AbstractRenderer {
                 throw new Error("Slider's children could be only 'owl:owl-vertical-box-item', but '" + page.tagName + "' found.");
 
             originalElement.element.removeChild(page);
-            this._addPage(rootNode, page, -1, manipulator);
+            this._addItemFromTag(rootNode, page, -1, manipulator);
         }
 
         let result: RenderResult = new RenderResult(rootNode, entryNodes);
@@ -36,7 +36,7 @@ export class Renderer extends AbstractRenderer {
      */
     public getOptions(originalNode: CommonHtmlNode): Object {
         let result: Object = super.getOptions(originalNode);
-        result["sizer"] = super.getAttributeValue(<CommonHtmlElement>originalNode, "sizer");
+        result["sizer"] = super._getAttributeValue(<CommonHtmlElement>originalNode, "sizer");
 
         return result;
     }
@@ -46,11 +46,13 @@ export class Renderer extends AbstractRenderer {
         this._addPageToTarget(target, wrappedContent, index);
     }
 
-    protected _addPage(target: CommonHtmlElement, page: Element, index:number, domManipulator: DomManipulator) : void {
+    protected _addItemFromTag(target: CommonHtmlElement, itemContainer: Element, index:number, domManipulator: DomManipulator) : void {
         let containerElement: CommonHtmlElement = domManipulator.createNewFragment(Renderer.WRAPPER_TEMPLATE);
+        let contentSize = this._getAttributeValue(<CommonHtmlElement>domManipulator.mapNode(itemContainer), "size", "auto");
+        containerElement.attributes.set("size", contentSize);
 
-        while (page.childNodes.length)
-            containerElement.element.appendChild(page.childNodes.item(0));
+        while (itemContainer.childNodes.length)
+            containerElement.element.appendChild(itemContainer.childNodes.item(0));
 
         this._addPageToTarget(target, containerElement, index);
     }
@@ -78,6 +80,15 @@ export class Controller extends SizeableComponent {
     public repaint() : void {
         let rootElement: CommonHtmlElement = <CommonHtmlElement>this._view.rootNode;
         let children: CommonNodeList = rootElement.chidlren;
+
+        let byContent: CommonNodeList, byAuto: CommonNodeList;
+        [byContent, byAuto] = this._categorizeChildren(children);
+    }
+
+    private _categorizeChildren(children: CommonNodeList) : CommonNodeList[] {
+        let result: CommonNodeList[] = new Array<CommonNodeList>();
+
+        return result;
     }
 }
 
