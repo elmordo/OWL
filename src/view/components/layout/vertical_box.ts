@@ -84,9 +84,14 @@ export class Controller extends SizeableComponent {
         let byContent: CommonNodeList, byAuto: CommonNodeList, byExplicit: CommonNodeList;
         [byContent, byAuto, byExplicit] = this._categorizeChildren(children);
 
-        let availableSize: number = this._getAvailableSize();
+        let availableSpace: number = this._getAvailableSize();
 
-        console.log(byContent, byAuto);
+        this._processExplicits(byExplicit);
+
+        availableSpace -= this._getTotalHeight(byExplicit);
+        availableSpace -= this._getTotalHeight(byContent);
+
+        this._processAutos(byAuto, availableSpace);
     }
 
     private _categorizeChildren(children: CommonNodeList) : CommonNodeList[] {
@@ -117,6 +122,26 @@ export class Controller extends SizeableComponent {
         return [byContent, byAuto, byExplicit];
     }
 
+    private _processExplicits(elements: CommonNodeList) : void {
+        elements.forEach((n) => {
+            let e: CommonHtmlElement = <CommonHtmlElement>n;
+            let height = e.attributes.get("size").value + "px";
+            e.styles.set("height", height);
+        });
+    }
+
+    private _processAutos(elements: CommonNodeList, availableSpace: number) : void {
+        if (elements.length > 0) {
+            let perElement: number = availableSpace / elements.length;
+            let perElementPx: string = perElement.toString() + "px";
+
+            elements.forEach((n) => {
+                let e: CommonHtmlElement = <CommonHtmlElement>n;
+                e.styles.set("height", perElementPx);
+            });
+        }
+    }
+
     private _getItemElements() : CommonNodeList {
         let container: CommonHtmlElement = this._getItemContainer();
         return container.chidlren;
@@ -128,6 +153,16 @@ export class Controller extends SizeableComponent {
 
     private _getAvailableSize() : number {
         return this._getItemContainer().size.height;
+    }
+
+    private _getTotalHeight(elements: CommonNodeList) : number {
+        let result: number = 0;
+
+        elements.forEach((e) => {
+            result += (<CommonHtmlElement>e).size.height;
+        });
+
+        return result;
     }
 }
 
