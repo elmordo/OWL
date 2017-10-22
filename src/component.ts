@@ -136,7 +136,10 @@ export class ComponentFactory {
         let options = renderer.getOptions(mappedElement);
         let renderedContent: RenderResult = renderer.render(mappedElement, this._domManipulator, options);
 
-        return this._createController(componentDsc, options, renderedContent);
+        let controller: ControllerBase = this._createController(componentDsc, options, renderedContent);
+        controller.renderer = renderer;
+
+        return controller;
     }
 
     private _getRenderer(description: ComponentDescription) : IRenderer {
@@ -180,15 +183,31 @@ export class ComponentFactory {
  */
 export class ComponentInserter {
 
+    /**
+     * component factory
+     * @type {ComponentFactory}
+     */
     private _componentFactory: ComponentFactory;
 
+    /**
+     * root element of the app
+     * @type {HTMLElement}
+     */
     private _rootElement: HTMLElement;
 
+    /**
+     * create new instance of the component inserter and initialize it
+     * @param {ComponentFactory} componentFactory component factory
+     * @param {HTMLElement} rootElement root element of the app
+     */
     constructor(componentFactory: ComponentFactory, rootElement: HTMLElement) {
         this._componentFactory = componentFactory;
         this._rootElement = rootElement;
     }
 
+    /**
+     * process template and insert components
+     */
     public insertComponents() : void {
         let walker: TreeWalker = this._createWalker();
         let currentNode:Node = walker.nextNode();
@@ -200,6 +219,10 @@ export class ComponentInserter {
         }
     }
 
+    /**
+     * create new DOM walker
+     * @return {TreeWalker} dom walker
+     */
     private _createWalker() : TreeWalker {
         let document = this._rootElement.ownerDocument;
         let filter = {
@@ -212,6 +235,11 @@ export class ComponentInserter {
         return document.createTreeWalker(this._rootElement, NodeFilter.SHOW_ELEMENT, filter);
     }
 
+    /**
+     * process one component
+     * @param {HTMLElement} element the element to process
+     * @return {Node} component visual representation
+     */
     private _processElement(element: HTMLElement) : Node {
         // get name
         let name = this._getComponentName(element);
@@ -223,6 +251,11 @@ export class ComponentInserter {
         return componentController.view.node;
     }
 
+    /**
+     * get component name from the element
+     * @param {HTMLElement} element element to detect name from
+     * @return {string} name of the component
+     */
     private _getComponentName(element: HTMLElement) : string {
         let nameParts = element.tagName.substr(4).toLowerCase().split("-");
         let result = nameParts[0];
@@ -238,8 +271,16 @@ export class ComponentInserter {
 
 export class ControllerBase extends EventDispatcher {
 
+    /**
+     * name of attribute with public id of the controller
+     * @type {String}
+     */
     static OPT_ID = "id";
 
+    /**
+     * next interanl id of the controller
+     * @type {Number}
+     */
     static _NEXT_ID = 1;
 
     /**
@@ -253,6 +294,12 @@ export class ControllerBase extends EventDispatcher {
      * @type {RenderResult}
      */
     protected _view: RenderResult;
+
+    /**
+     * the view renderer
+     * @type {IRenderer}
+     */
+    protected _renderer: IRenderer;
 
     /**
      * instance of service manager to use
@@ -320,7 +367,16 @@ export class ControllerBase extends EventDispatcher {
     set serviceManager(val: ServiceManager) {
         this._serviceManager = val;
     }
+
+    get renderer(): IRenderer {
+        return this._renderer;
+    }
+
+    set renderer(val: IRenderer) {
+        this._renderer = val;
+    }
 }
+
 
 export class SizeableComponent extends ControllerBase {
 

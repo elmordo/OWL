@@ -31,7 +31,6 @@ export class Renderer extends AbstractRenderer {
 
         return result;
     }
-
 }
 
 

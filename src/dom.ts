@@ -32,6 +32,11 @@ export class DomManipulator {
         return <CommonHtmlAttribute>this.mapNode(attr);
     }
 
+    public createElement(tagName: string) : CommonHtmlElement {
+        let element = this.window.document.createElement(tagName);
+        return <CommonHtmlElement>this.mapNode(element);
+    }
+
     public mapNode(node:Node) : CommonHtmlNode {
         if (this._cache.isCached(node))
             return this._cache.getCached(node);
@@ -439,8 +444,8 @@ export class CommonHtmlNode {
         return this._node;
     }
 
-    get parent() : Node {
-        return this._node.parentNode;
+    get parent() : CommonHtmlNode {
+        return this._domManipulator.mapNode(this._node.parentNode);
     }
 
     get domManipulator() : DomManipulator {
@@ -463,6 +468,21 @@ export class CommonHtmlElement extends CommonHtmlNode {
 
     public append(node: CommonHtmlNode) : void {
         this.element.appendChild(node.node);
+    }
+
+    public insertOnIndex(node: CommonHtmlNode, index: number) : void {
+        if (index < 0 || index >= this.element.childNodes.length)
+            throw new Error("Invalid index '" + index + "'");
+
+        let refNode = this.element.childNodes.item(index);
+        this.element.parentNode.insertBefore(node.node, refNode);
+    }
+
+    public insertBeforeNode(node: CommonHtmlNode, refNode: CommonHtmlNode) : void {
+        if (refNode.parent !== this)
+            throw new Error("Invalid subtree");
+
+        this.node.insertBefore(node.node, refNode.node);
     }
 
     get attributes(): AttributeManager {
