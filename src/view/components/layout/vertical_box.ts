@@ -81,14 +81,53 @@ export class Controller extends SizeableComponent {
         let rootElement: CommonHtmlElement = <CommonHtmlElement>this._view.rootNode;
         let children: CommonNodeList = rootElement.chidlren;
 
-        let byContent: CommonNodeList, byAuto: CommonNodeList;
-        [byContent, byAuto] = this._categorizeChildren(children);
+        let byContent: CommonNodeList, byAuto: CommonNodeList, byExplicit: CommonNodeList;
+        [byContent, byAuto, byExplicit] = this._categorizeChildren(children);
+
+        let availableSize: number = this._getAvailableSize();
+
+        console.log(byContent, byAuto);
     }
 
     private _categorizeChildren(children: CommonNodeList) : CommonNodeList[] {
-        let result: CommonNodeList[] = new Array<CommonNodeList>();
+        let itemElements = this._getItemElements();
 
-        return result;
+        let byContent: CommonNodeList = CommonNodeList.createInstance();
+        let byAuto: CommonNodeList = CommonNodeList.createInstance();
+        let byExplicit: CommonNodeList = CommonNodeList.createInstance();
+
+        itemElements.forEach((node) => {
+            if (node instanceof CommonHtmlElement) {
+                switch(node.attributes.get("size").value) {
+                    case "auto":
+                    byAuto.push(node);
+                    break;
+
+                    case "content":
+                    byContent.push(node);
+                    break;
+
+                    default:
+                    byExplicit.push(node);
+                    break;
+                }
+            }
+        });
+
+        return [byContent, byAuto, byExplicit];
+    }
+
+    private _getItemElements() : CommonNodeList {
+        let container: CommonHtmlElement = this._getItemContainer();
+        return container.chidlren;
+    }
+
+    private _getItemContainer() : CommonHtmlElement {
+        return <CommonHtmlElement>this._view.rootNode;
+    }
+
+    private _getAvailableSize() : number {
+        return this._getItemContainer().size.height;
     }
 }
 

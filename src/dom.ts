@@ -495,6 +495,10 @@ export class CommonHtmlElement extends CommonHtmlNode {
         return this._styleManager;
     }
 
+    get size(): Size {
+        return new Size(this.element.offsetWidth, this.element.offsetHeight);
+    }
+
     get element(): HTMLElement {
         return <HTMLElement>this.node;
     }
@@ -659,5 +663,18 @@ export class CommonNodeList extends Array<CommonHtmlNode> {
         if (this.length == 0)
             throw new Error("The list is empty");
         return this[this.length - 1];
+    }
+}
+
+
+export class Size {
+
+    public width: number;
+
+    public height: number;
+
+    constructor(width: number, height: number) {
+        this.width = width;
+        this.height = height;
     }
 }
