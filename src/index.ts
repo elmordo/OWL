@@ -3,7 +3,7 @@ import { DomManipulator } from "./dom";
 import { ServiceManager } from "./service_management";
 import { ModuleManager, ModuleFactoryFn } from "./modules"
 import { register } from "./view/components/register"
-import { ComponentFactory, ComponentInserter } from "./component"
+import { ComponentFactory, ComponentInserter, ControllerManager } from "./component"
 import { sizerFactory } from "./view/sizer/factory"
 import { SizerFactory } from "./view/sizer/base"
 
@@ -26,6 +26,8 @@ export class OwlWebLib {
 
     private _componentFactory: ComponentFactory;
 
+    private _controllerManager: ControllerManager;
+
     private _rootElement: HTMLElement;
 
     private _window: Window;
@@ -37,6 +39,7 @@ export class OwlWebLib {
     constructor() {
         this._serviceManager = new ServiceManager();
         this._moduleManager = new ModuleManager();
+        this._controllerManager = new ControllerManager();
         this._sizerFactory = sizerFactory();
         this._domManipulator = null;
         this._componentFactory = null;
@@ -84,7 +87,9 @@ export class OwlWebLib {
     private _initializeMembers() : void {
         this._domManipulator = new DomManipulator(this._window, this._rootElement);
         this._componentFactory = new ComponentFactory(this._serviceManager, this._domManipulator);
-        this._componentInserter = new ComponentInserter(this._componentFactory, this._rootElement);
+        this._componentInserter = new ComponentInserter(this._componentFactory, this._controllerManager, this._rootElement);
+
+        console.log(this);
     }
 
     private _initializeCommonServices() : void {

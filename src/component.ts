@@ -178,6 +178,35 @@ export class ComponentFactory {
 }
 
 
+export class ControllerManager {
+
+    private _lookup: ControllerLookup;
+
+    constructor() {
+        this._lookup = new ControllerLookup();
+    }
+
+    public registerComponent(controller: ControllerBase) : void {
+        let id: string = controller.id;
+
+        if (!id)
+            throw new Error("Id has to be set");
+
+        if (this._lookup[id])
+            throw new Error("Controller '" + id + "' is already registered");
+
+        this._lookup[id] = controller;
+    }
+
+    public get(name: string) : ControllerBase {
+        if (!this._lookup[name])
+            throw new Error("Controller '" + name + "' is not registered");
+
+        return this._lookup[name];
+    }
+}
+
+
 /**
  * replace component placeholders in dom by real rendered components
  */
@@ -190,6 +219,12 @@ export class ComponentInserter {
     private _componentFactory: ComponentFactory;
 
     /**
+     * manage controllers
+     * @type {ControllerManager}
+     */
+    private _controllerManager: ControllerManager;
+
+    /**
      * root element of the app
      * @type {HTMLElement}
      */
@@ -200,7 +235,8 @@ export class ComponentInserter {
      * @param {ComponentFactory} componentFactory component factory
      * @param {HTMLElement} rootElement root element of the app
      */
-    constructor(componentFactory: ComponentFactory, rootElement: HTMLElement) {
+    constructor(componentFactory: ComponentFactory, controllerManager: ControllerManager, rootElement: HTMLElement) {
+        this._controllerManager = controllerManager;
         this._componentFactory = componentFactory;
         this._rootElement = rootElement;
     }
@@ -247,6 +283,9 @@ export class ComponentInserter {
 
         element.parentElement.replaceChild(componentController.view.node, element);
         componentController.repaint();
+
+        if (componentController.id)
+            this._controllerManager.registerComponent(componentController);
 
         return componentController.view.node;
     }
@@ -424,4 +463,9 @@ export function registerFunctionFactory(baseNs: string, name: string, renderer, 
  */
 class ComponentLookup {
     [name: string]: ComponentDescription;
+}
+
+
+class ControllerLookup {
+    [key: string]: ControllerBase;
 }
