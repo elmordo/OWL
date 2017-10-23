@@ -3,7 +3,7 @@ import { ServiceManager } from "./service_management";
 import { IRenderer, RenderResult } from "./rendering";
 import { DomManipulator, CommonHtmlNode, CommonHtmlElement } from "./dom";
 import { ISizer, SizerFactory } from "./view/sizer/base"
-import { EventDispatcher } from "./events"
+import { EventDispatcher, DomEvent, OwlEvent } from "./events"
 
 /**
  * describe component and hold information required to create
@@ -287,6 +287,8 @@ export class ComponentInserter {
         if (componentController.id)
             this._controllerManager.registerComponent(componentController);
 
+        bindStaticEvents(componentController, element);
+
         return componentController.view.node;
     }
 
@@ -347,6 +349,18 @@ export class ControllerBase extends EventDispatcher {
     protected _serviceManager: ServiceManager;
 
     /**
+     * gateway between real dom and component
+     * @type {DomEventGateway}
+     */
+    protected _domEventGateway: DomEventGateway;
+
+    /**
+     * controller manager for static event handlers
+     * @type {ControllerManager}
+     */
+    protected _controllerManager: ControllerManager;
+
+    /**
      * public identifier of the component
      * @type {string}
      */
@@ -358,6 +372,7 @@ export class ControllerBase extends EventDispatcher {
         this._internalId = ControllerBase._NEXT_ID++;
         this._view = null;
         this._serviceManager = null;
+        this._domEventGateway = null;
     }
 
     /**
@@ -367,6 +382,13 @@ export class ControllerBase extends EventDispatcher {
     public setup(renderedContent: RenderResult, options: Object) : void {
         this._view = renderedContent;
         this._id = options[ControllerBase.OPT_ID] || null;
+
+        if (!this._domEventGateway) {
+            this._domEventGateway = new DomEventGateway(this);
+            this._domEventGateway.listenForEnumeratedEvents(this.supportedEvents);
+        }
+
+        this._controllerManager = <ControllerManager>this._serviceManager.getServiceByPath("owl.controllerManager");
     }
 
     /**
@@ -414,6 +436,14 @@ export class ControllerBase extends EventDispatcher {
     set renderer(val: IRenderer) {
         this._renderer = val;
     }
+
+    get supportedEvents(): string[] {
+        return ["click"];
+    }
+
+    get controllerManager(): ControllerManager {
+        return this._controllerManager;
+    }
 }
 
 
@@ -454,6 +484,62 @@ export function registerFunctionFactory(baseNs: string, name: string, renderer, 
         let dsc: ComponentDescription = new ComponentDescription(name, rendererName, controllerName);
         cm.registerComponent(dsc);
     }
+}
+
+export class DomEventGateway {
+
+    private _controller: ControllerBase;
+
+    private _rootNode: CommonHtmlNode;
+
+    private _managedEventTypes: string[];
+
+    constructor(controller: ControllerBase) {
+        this._controller = controller;
+        this._rootNode = controller.view;
+        this._managedEventTypes = new Array<string>();
+    }
+
+    public listenForEnumeratedEvents(eventTypes: string[]) : void {
+        eventTypes.forEach((type) => {
+            this.listenForEvent(type);
+        });
+    }
+
+    public listenForEvent(eventType) : void {
+        this._rootNode.addEventListener(eventType, (evt) => { this._handleEvent(evt); });
+    }
+
+    private _handleEvent(event: Event) : void {
+        let wrappedEvent = new DomEvent(event);
+        this._controller.dispatchEvent(wrappedEvent);
+    }
+}
+
+
+export function bindStaticEvents(controller: ControllerBase, originalNode: HTMLElement): void {
+    for (let i = 0; i < originalNode.attributes.length; ++i) {
+        let attr: Attr = originalNode.attributes.item(i);
+
+        if (isStaticEvent(attr)) {
+            let eventType = getStaticEventType(attr);
+            let expr = attr.value;
+            controller.addEventListener(eventType, createStaticEventHandler(expr, controller));
+        }
+    }
+}
+
+function isStaticEvent(attr: Attr): boolean {
+    return attr.name.substr(0, 5) == "hoot:";
+}
+
+function getStaticEventType(attr: Attr): string {
+    return attr.name.substr(5);
+}
+
+function createStaticEventHandler(expr: string, context: ControllerBase): Function {
+    let result = new Function("$event", expr);
+    return result.bind(context);
 }
 
 

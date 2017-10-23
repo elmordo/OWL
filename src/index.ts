@@ -18,6 +18,8 @@ export class OwlWebLib {
 
     static SERVICE_PREFIX_SIZER_MANAGER: string = "owl.sizerFactory";
 
+    static SERVICE_PREFIX_CONTROLLER_MANAGER: string = "owl.controllerManager";
+
     private _serviceManager: ServiceManager;
 
     private _domManipulator: DomManipulator;
@@ -88,8 +90,6 @@ export class OwlWebLib {
         this._domManipulator = new DomManipulator(this._window, this._rootElement);
         this._componentFactory = new ComponentFactory(this._serviceManager, this._domManipulator);
         this._componentInserter = new ComponentInserter(this._componentFactory, this._controllerManager, this._rootElement);
-
-        console.log(this);
     }
 
     private _initializeCommonServices() : void {
@@ -97,6 +97,7 @@ export class OwlWebLib {
         this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_DOM_MANIPULATOR, () => { return this._domManipulator; });
         this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_COMPONENT_MANAGER, () => { return this._componentFactory; });
         this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_SIZER_MANAGER, () => { return this._sizerFactory; });
+        this._serviceManager.registerService(OwlWebLib.SERVICE_PREFIX_CONTROLLER_MANAGER, () => { return this._controllerManager; });
     }
 
     private _initializeComponents() : void {

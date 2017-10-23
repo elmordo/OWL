@@ -409,6 +409,20 @@ class AttributeManager {
             this._originalElement.setAttribute(name, value);
         }
     }
+
+    /**
+     * return list of attributes as common node list instance
+     * @return {CommonNodeList} list of attributes
+     */
+    public toCommonNodeList(): CommonNodeList {
+        let result = CommonNodeList.createInstance();
+
+        for (let i = 0; i < this._attributes.length; ++i) {
+            result.push(this._manipulator.mapNode(this._attributes.item(i)));
+        }
+
+        return result;
+    }
 }
 
 class StyleManager {
@@ -440,6 +454,10 @@ export class CommonHtmlNode {
     constructor(node: Node, manipulator: DomManipulator) {
         this._node = node;
         this._domManipulator = manipulator;
+    }
+
+    public addEventListener(eventType: string, handler: EventListener) : void {
+        this.node.addEventListener(eventType, handler);
     }
 
     get node() : Node {

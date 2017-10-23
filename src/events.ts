@@ -2,7 +2,7 @@
 /**
  * represents event
  */
-export class Event {
+export class OwlEvent {
 
     /**
      * type of the event
@@ -77,6 +77,17 @@ export class Event {
     }
 }
 
+
+export class DomEvent extends OwlEvent {
+
+    public originalEvent: Event;
+
+    constructor(evt: Event, data: Object=null) {
+        super(evt.type, data);
+        this.originalEvent = evt;
+    }
+}
+
 /**
  * base class for all event dispatching classes
  */
@@ -84,9 +95,9 @@ export class EventDispatcher {
 
     /**
      * current event queue
-     * @type {Event[]}
+     * @type {OwlEvent[]}
      */
-    private _queue: Event[];
+    private _queue: OwlEvent[];
 
     /**
      * event processing flag
@@ -106,16 +117,16 @@ export class EventDispatcher {
      * initialize instance
      */
     constructor() {
-        this._queue = new Array<Event>();
+        this._queue = new Array<OwlEvent>();
         this._handlers = new EventHandlerLookup();
         this._inDispatchProcess = false;
     }
 
     /**
      * dispatch event
-     * @param {Event} evt event instance to dispatch
+     * @param {OwlEvent} evt event instance to dispatch
      */
-    public dispatchEvent(evt: Event): void {
+    public dispatchEvent(evt: OwlEvent): void {
         this._queue.push(evt);
 
         if (!this._inDispatchProcess)
@@ -182,9 +193,9 @@ export class EventDispatcher {
 
     /**
      * process one event
-     * @param {Event} evt event to process
+     * @param {OwlEvent} evt event to process
      */
-    private _processEvent(evt: Event) : void {
+    private _processEvent(evt: OwlEvent) : void {
         let handlers: EventHandler[] = this._getHandlerHolder(evt.type);
 
         handlers.forEach(function (handler) {
@@ -230,9 +241,9 @@ class EventHandler {
 
     /**
      * handle event
-     * @param {Event} event event to handle
+     * @param {OwlEvent} event event to handle
      */
-    public handle(event: Event) : void {
+    public handle(event: OwlEvent) : void {
         if (this._context)
             this._callback.call(this._context, event);
         else
