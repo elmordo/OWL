@@ -109,6 +109,14 @@ export class RenderResult {
     }
 
     /**
+     * entry nodes accessor
+     * @return {EntryNodeLookup} entry nodes
+     */
+    get entryNodes(): EntryNodeLookup {
+        return this._entryNodes;
+    }
+
+    /**
      * throw error if entry node does not exist
      * @param {string} name name of the etry node
      * @throws Error entry node does not exist

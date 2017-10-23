@@ -1,25 +1,13 @@
 
-import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../../rendering"
-import { DomManipulator, CommonHtmlNode, CommonHtmlText, CommonHtmlElement } from "../../../dom"
-import { ControllerBase, ComponentFactory, ComponentDescription } from "../../../component"
-import { ServiceManager, ServiceNamespace } from "../../../service_management"
+import { DomManipulator, CommonHtmlElement } from "../../../dom"
+import { ComponentFactory, ComponentDescription } from "../../../component"
+import { ServiceManager } from "../../../service_management"
+import { ButtonRendererBase, ButtonController } from "./base"
 
 
-export class Renderer extends AbstractRenderer {
+export class Renderer extends ButtonRendererBase {
 
-    static BUTTON_TEMPLATE = "<button type='button'>button</button>";
-
-    static ENTRY_LABEL = "label";
-
-    public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
-        let button = manipulator.createNewFragment(Renderer.BUTTON_TEMPLATE);
-        let entryNodes = new EntryNodeLookup();
-
-        entryNodes["label"] = button.chidlren.getFirst();
-
-        let result: RenderResult = new RenderResult(button, entryNodes);
-        return result;
-    }
+    static BUTTON_TEMPLATE = "<button type='button' class='owl-button'>button</button>";
 
     public getOptions(originalNode: CommonHtmlElement) : Object {
         let result = super.getOptions(originalNode);
@@ -27,31 +15,15 @@ export class Renderer extends AbstractRenderer {
 
         return result;
     }
+
+    protected _renderButton(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : CommonHtmlElement {
+        let button = manipulator.createNewFragment(Renderer.BUTTON_TEMPLATE);
+        return button;
+    }
 }
 
 
-export class Controller extends ControllerBase {;
-
-    private _label: CommonHtmlText;
-
-    constructor() {
-        super();
-    }
-
-    public setup(renderedContent: RenderResult, options: Object) : void {
-        super.setup(renderedContent, options);
-        this._label = <CommonHtmlText>renderedContent.getEntry(Renderer.ENTRY_LABEL);
-
-        this.label = options["label"] || this.label;
-    }
-
-    get label(): string {
-        return this._label.content;
-    }
-
-    set label(val: string) {
-        this._label.content = val;
-    }
+export class Controller extends ButtonController {
 }
 
 
