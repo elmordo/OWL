@@ -472,20 +472,6 @@ export class SizeableComponent extends ControllerBase {
 
 }
 
-
-export function registerFunctionFactory(baseNs: string, name: string, renderer, controller): Function {
-    return (cm: ComponentFactory, sm: ServiceManager) => {
-        let rendererName: string = baseNs + ".renderer";
-        let controllerName: string = baseNs + ".controller";
-
-        sm.registerService(rendererName, () => { return new renderer(); });
-        sm.registerService(controllerName, () => { return new controller(); });
-
-        let dsc: ComponentDescription = new ComponentDescription(name, rendererName, controllerName);
-        cm.registerComponent(dsc);
-    }
-}
-
 export class DomEventGateway {
 
     private _controller: ControllerBase;
@@ -517,6 +503,20 @@ export class DomEventGateway {
 }
 
 
+export function registerFunctionFactory(baseNs: string, name: string, renderer, controller): Function {
+    return (cm: ComponentFactory, sm: ServiceManager) => {
+        let rendererName: string = baseNs + ".renderer";
+        let controllerName: string = baseNs + ".controller";
+
+        sm.registerService(rendererName, () => { return new renderer(); }, false);
+        sm.registerService(controllerName, () => { return new controller(); }, false);
+
+        let dsc: ComponentDescription = new ComponentDescription(name, rendererName, controllerName);
+        cm.registerComponent(dsc);
+    }
+}
+
+
 export function bindStaticEvents(controller: ControllerBase, originalNode: HTMLElement): void {
     for (let i = 0; i < originalNode.attributes.length; ++i) {
         let attr: Attr = originalNode.attributes.item(i);
@@ -524,6 +524,7 @@ export function bindStaticEvents(controller: ControllerBase, originalNode: HTMLE
         if (isStaticEvent(attr)) {
             let eventType = getStaticEventType(attr);
             let expr = attr.value;
+            console.log(controller);
             controller.addEventListener(eventType, createStaticEventHandler(expr, controller));
         }
     }

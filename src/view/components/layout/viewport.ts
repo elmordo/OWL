@@ -1,6 +1,6 @@
 
 import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../../rendering"
-import { SizeableComponent, ComponentFactory, ComponentDescription } from "../../../component"
+import { SizeableComponent, ComponentFactory, ComponentDescription, registerFunctionFactory } from "../../../component"
 import { ServiceManager } from "../../../service_management"
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator } from "../../../dom"
 
@@ -52,15 +52,4 @@ export class Controller extends SizeableComponent {
 }
 
 
-export function register(cf: ComponentFactory, sm: ServiceManager): void {
-    let baseNs = "owl.component.layout.viewport";
-
-    let rendererName: string = baseNs + ".renderer";
-    let controllerName: string = baseNs + ".controller";
-
-    sm.registerService(rendererName, () => { return new Renderer(); });
-    sm.registerService(controllerName, () => { return new Controller(); });
-
-    let dsc: ComponentDescription = new ComponentDescription("owlViewport", rendererName, controllerName);
-    cf.registerComponent(dsc);
-}
+export let register: Function = registerFunctionFactory("owl.component.layout.viewport", "owlViewport", Renderer, Controller);

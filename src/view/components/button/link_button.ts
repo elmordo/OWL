@@ -1,7 +1,8 @@
 
-import { DomManipulator, CommonHtmlElement } from "../../../dom"
+import { DomManipulator, CommonHtmlElement, CommonHtmlAttribute } from "../../../dom"
 import { registerFunctionFactory } from "../../../component"
 import { ButtonRendererBase, ButtonController } from "./base"
+import { EntryNodeLookup } from "../../../rendering"
 
 
 export class Renderer extends ButtonRendererBase {
@@ -16,6 +17,11 @@ export class Renderer extends ButtonRendererBase {
         return result;
     }
 
+    protected _setupLookup(button: CommonHtmlElement, wrapperLookup: EntryNodeLookup) : void {
+        super._setupLookup(button, wrapperLookup);
+        wrapperLookup["href"] = button.attributes.get("href");
+    }
+
     protected _renderButton(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : CommonHtmlElement {
         let button = manipulator.createNewFragment(Renderer.BUTTON_TEMPLATE);
         button.attributes.set("href", options["href"]);
@@ -25,6 +31,10 @@ export class Renderer extends ButtonRendererBase {
 
 
 export class Controller extends ButtonController {
+
+    get href(): string {
+        return (<CommonHtmlAttribute>this._view.getEntry("href")).value;
+    }
 }
 
 

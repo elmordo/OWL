@@ -1,7 +1,7 @@
 import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../../../rendering"
-import { CommonHtmlNode, CommonHtmlElement, DomManipulator } from "../../../dom"
+import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
-import { ComponentFactory, ComponentDescription, SizeableComponent } from "../../../component"
+import { ComponentFactory, ComponentDescription, SizeableComponent, registerFunctionFactory } from "../../../component"
 
 
 export class Renderer extends AbstractRenderer {
@@ -48,6 +48,7 @@ export class Renderer extends AbstractRenderer {
 
     protected _addPage(target: CommonHtmlElement, page: Element, index:number, domManipulator: DomManipulator) : void {
         let containerElement: CommonHtmlElement = domManipulator.createNewFragment(Renderer.WRAPPER_TEMPLATE);
+        containerElement.attributes.set("name", page.getAttribute("name"));
 
         while (page.childNodes.length)
             containerElement.element.appendChild(page.childNodes.item(0));
@@ -75,18 +76,53 @@ export class Renderer extends AbstractRenderer {
 
 export class Controller extends SizeableComponent {
 
+    public goto(pageName: string) : void {
+        let container: CommonHtmlElement = this._getItemContainer();
+        let targetItem: CommonHtmlElement = this._findItemByName(container, pageName);
+        let targetScroll = this._getTargetPosition(targetItem);
+
+        this._scroll(container, targetScroll);
+    }
+
+    private _getItemContainer() : CommonHtmlElement {
+        return <CommonHtmlElement>this._view.rootNode;
+    }
+
+    private _getCurrentScroll(itemContainer: CommonHtmlElement) : number {
+        return itemContainer.element.scrollTop;
+    }
+
+    private _getTargetPosition(target: CommonHtmlElement) : number {
+        return target.element.offsetTop;
+    }
+
+    private _scroll(container: CommonHtmlElement, targetValue: number) : void {
+        container.element.scrollTo(0, targetValue);
+    }
+
+    private _findItemByName(container: CommonHtmlElement, name: string) : CommonHtmlElement {
+        let result: CommonHtmlElement = null;
+        let children: CommonNodeList = container.chidlren;
+
+        for (let child of children) {
+            let childElement: CommonHtmlElement = <CommonHtmlElement>child;
+
+            try {
+                if (childElement.attributes.get("name").value == name) {
+                    result = childElement;
+                    break;
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        if (result === null)
+            throw new Error("Page '" + name + "' not found");
+
+        return result;
+    }
 }
 
 
-export function register(cf: ComponentFactory, sm: ServiceManager): void {
-    let baseNs = "owl.component.layout.slider";
-
-    let rendererName: string = baseNs + ".renderer";
-    let controllerName: string = baseNs + ".controller";
-
-    sm.registerService(rendererName, () => { return new Renderer(); });
-    sm.registerService(controllerName, () => { return new Controller(); });
-
-    let dsc: ComponentDescription = new ComponentDescription("owlSlider", rendererName, controllerName);
-    cf.registerComponent(dsc);
-}
+export let register: Function = registerFunctionFactory("owl.component.layout.slider", "owlSlider", Renderer, Controller);

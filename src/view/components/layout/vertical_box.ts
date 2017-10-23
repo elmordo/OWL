@@ -1,7 +1,7 @@
 import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../../../rendering"
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
-import { ComponentFactory, ComponentDescription, SizeableComponent } from "../../../component"
+import { ComponentFactory, ComponentDescription, SizeableComponent, registerFunctionFactory } from "../../../component"
 
 
 export class Renderer extends AbstractRenderer {
@@ -172,15 +172,4 @@ class ItemInfo {
 }
 
 
-export function register(cf: ComponentFactory, sm: ServiceManager): void {
-    let baseNs = "owl.component.layout.vertical-box";
-
-    let rendererName: string = baseNs + ".renderer";
-    let controllerName: string = baseNs + ".controller";
-
-    sm.registerService(rendererName, () => { return new Renderer(); });
-    sm.registerService(controllerName, () => { return new Controller(); });
-
-    let dsc: ComponentDescription = new ComponentDescription("owlVerticalBox", rendererName, controllerName);
-    cf.registerComponent(dsc);
-}
+export let register: Function = registerFunctionFactory("owl.component.layout.vertical-box", "owlVerticalBox", Renderer, Controller);
