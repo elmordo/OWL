@@ -404,6 +404,20 @@ export class SizeableComponent extends ControllerBase {
 }
 
 
+export function registerFunctionFactory(baseNs: string, name: string, renderer, controller): Function {
+    return (cm: ComponentFactory, sm: ServiceManager) => {
+        let rendererName: string = baseNs + ".renderer";
+        let controllerName: string = baseNs + ".controller";
+
+        sm.registerService(rendererName, () => { return new renderer(); });
+        sm.registerService(controllerName, () => { return new controller(); });
+
+        let dsc: ComponentDescription = new ComponentDescription(name, rendererName, controllerName);
+        cm.registerComponent(dsc);
+    }
+}
+
+
 /**
  * the key is component name
  * the value is component description instance
