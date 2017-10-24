@@ -37,6 +37,7 @@ export class Renderer extends AbstractRenderer {
     public getOptions(originalNode: CommonHtmlNode): Object {
         let result: Object = super.getOptions(originalNode);
         result["sizer"] = super._getAttributeValue(<CommonHtmlElement>originalNode, "sizer");
+        result["duration"] = super._getAttributeValue(<CommonHtmlElement>originalNode, "slide-duration");
 
         return result;
     }
@@ -76,12 +77,27 @@ export class Renderer extends AbstractRenderer {
 
 export class Controller extends SizeableComponent {
 
+    private _duration: number;
+
     public goto(pageName: string) : void {
         let container: CommonHtmlElement = this._getItemContainer();
         let targetItem: CommonHtmlElement = this._findItemByName(container, pageName);
         let targetScroll = this._getTargetPosition(targetItem);
 
         this._scroll(container, targetScroll);
+    }
+
+    public setup(renderedContent: RenderResult, options: Object) : void {
+        super.setup(renderedContent, options);
+        this._duration = Number(options["duration"])
+    }
+
+    get duration(): number {
+        return this._duration;
+    }
+
+    set duration(val: number) {
+        this._duration = val;
     }
 
     private _getItemContainer() : CommonHtmlElement {
@@ -97,7 +113,40 @@ export class Controller extends SizeableComponent {
     }
 
     private _scroll(container: CommonHtmlElement, targetValue: number) : void {
-        container.element.scrollTo(0, targetValue);
+        if (this._duration == 0) {
+            container.element.scrollTo(0, targetValue);
+        } else {
+            this._slideSmooth(container, targetValue);
+        }
+    }
+
+    private _slideSmooth(container: CommonHtmlElement, target: number) : void {
+        let timeLeft: number = this._duration;
+        let timeStep: number = 1000 / 30;
+        let timeSteps: number = this._duration / timeStep;
+
+        let startScroll: number = container.element.scrollTop;
+        let currentPosition = startScroll;
+        let scrollLength: number =  target - startScroll;
+        let scrollStep = scrollLength / timeSteps;
+
+        let iteration = 0;
+
+        let tm: number = setInterval(() => {
+            let delta = Math.abs(currentPosition - target);
+
+            if (delta < Math.abs(scrollStep) || delta == 0) {
+                container.element.scrollTo(0, target);
+                clearInterval(tm);
+                return;
+            }
+
+            ++iteration;
+            currentPosition = startScroll + scrollStep * iteration;
+            container.element.scrollTo(0, currentPosition);
+
+            if (currentPosition < 0) clearInterval(tm);
+        }, timeStep);
     }
 
     private _findItemByName(container: CommonHtmlElement, name: string) : CommonHtmlElement {

@@ -524,7 +524,6 @@ export function bindStaticEvents(controller: ControllerBase, originalNode: HTMLE
         if (isStaticEvent(attr)) {
             let eventType = getStaticEventType(attr);
             let expr = attr.value;
-            console.log(controller);
             controller.addEventListener(eventType, createStaticEventHandler(expr, controller));
         }
     }
