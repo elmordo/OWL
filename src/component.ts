@@ -288,6 +288,11 @@ export class ComponentInserter {
             this._controllerManager.registerComponent(componentController);
 
         bindStaticEvents(componentController, element);
+        componentController.initialize();
+
+        // TODO: delete these two rows
+        if (element.tagName == "OWL:OWL-SLIDER")
+            console.log(componentController);
 
         return componentController.view.node;
     }
@@ -402,18 +407,90 @@ export class ControllerBase extends EventDispatcher {
         this._view = renderedContent;
         this._id = options[ControllerBase.OPT_ID] || null;
 
-        if (!this._domEventGateway) {
-            this._domEventGateway = new DomEventGateway(this);
-            this._domEventGateway.listenForEnumeratedEvents(this.supportedEvents);
-        }
+        this._setupGateway();
+        this._setupTracking();
 
         this._controllerManager = <ControllerManager>this._serviceManager.getServiceByPath("owl.controllerManager");
+    }
+
+    /**
+     * initialize component in component tree
+     */
+    public initialize() : void {
+        this._dispatchTrackingSignal();
     }
 
     /**
      * cause element repaint
      */
     public repaint() : void {
+        this._dispatchLocalEvent(ControllerBase.EVENT_REPAING);
+    }
+
+    /**
+     * dispatch local OWL event (event has not origin in real DOM)
+     * @param {string} eventType event type
+     * @param {Object=null} data optional data
+     */
+    protected _dispatchLocalEvent(eventType: string, data: Object=null) : void {
+        let evt: OwlEvent = new OwlEvent(eventType, data);
+        this.dispatchEvent(evt);
+    }
+
+    private _dispatchTrackingSignal() : void {
+        let evt = new CustomEvent(ControllerBase.EVENT_TRACKING_SIGNAL, { detail: this, "bubbles": true });
+        this._view.rootNode.node.dispatchEvent(evt);
+    }
+
+    /**
+     * setup DOM event - Local event gateway
+     */
+    private _setupGateway() : void {
+        this._domEventGateway = new DomEventGateway(this);
+        this._domEventGateway.listenForEnumeratedEvents(this.supportedEvents);
+    }
+
+    /**
+     * setup tracking signal handling
+     */
+    private _setupTracking() : void {
+        let self: ControllerBase = this;
+
+        this._view.rootNode.node.addEventListener(ControllerBase.EVENT_TRACKING_SIGNAL, (evt: Event) => {
+            let realEvt: CustomEvent = <CustomEvent>evt;
+            let sender = <ControllerBase>realEvt.detail;
+
+            if (sender._internalId != self._internalId) {
+                evt.stopPropagation();
+
+                if (sender._parent && sender._parent != self) {
+                    // remove child from the parent
+                    sender._parent._removeChild(sender);
+                }
+
+                sender._parent = self;
+
+                if (self._children.indexOf(sender) == -1)
+                    self._children.push(sender);
+            }
+
+            return true;
+        });
+
+    }
+
+    /**
+     * remove child from the component
+     * @param {ControllerBase} child [description]
+     */
+    private _removeChild(child: ControllerBase) : void {
+        if (child._parent == this) {
+            let index = this._children.indexOf(child);
+            if (index != -1)
+                this._children.splice(index, 1);
+
+            child._parent = null;
+        }
     }
 
     /**

@@ -53,6 +53,11 @@ export abstract class AbstractRenderer implements IRenderer {
         return result;
     }
 
+    protected _setupId(target: CommonHtmlElement, options: Object) : void {
+        if (options["id"])
+            target.attributes.set("id", options["id"]);
+    }
+
     protected _setupClassNames(target: CommonHtmlElement, options: Object) : void {
         if (options["classes"])
             for (let className of options["classes"])
