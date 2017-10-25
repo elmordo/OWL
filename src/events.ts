@@ -61,6 +61,26 @@ export class OwlEvent {
     }
 
     /**
+     * get event target
+     * @return {EventDispatcher} event target
+     */
+    get target(): EventDispatcher {
+        return this._target;
+    }
+
+    /**
+     * set event target
+     * @param {EventDispatcher} val event target to set
+     * @throws Error some event target is set
+     */
+    set target(val: EventDispatcher) {
+        if (this._target)
+            throw new Error("Target can not be changed");
+
+        this._target = val;
+    }
+
+    /**
      * get current target
      * @return {EventDispatcher} current target
      */
@@ -127,6 +147,7 @@ export class EventDispatcher {
      * @param {OwlEvent} evt event instance to dispatch
      */
     public dispatchEvent(evt: OwlEvent): void {
+        evt.target = this;
         this._queue.push(evt);
 
         if (!this._inDispatchProcess)
@@ -196,6 +217,7 @@ export class EventDispatcher {
      * @param {OwlEvent} evt event to process
      */
     private _processEvent(evt: OwlEvent) : void {
+        evt.currentTarget = this;
         let handlers: EventHandler[] = this._getHandlerHolder(evt.type);
 
         handlers.forEach(function (handler) {
