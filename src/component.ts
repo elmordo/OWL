@@ -231,14 +231,21 @@ export class ComponentInserter {
     private _rootElement: HTMLElement;
 
     /**
+     * root controller of the application
+     * @type {ControllerBase}
+     */
+    private _rootController: ControllerBase;
+
+    /**
      * create new instance of the component inserter and initialize it
      * @param {ComponentFactory} componentFactory component factory
      * @param {HTMLElement} rootElement root element of the app
      */
-    constructor(componentFactory: ComponentFactory, controllerManager: ControllerManager, rootElement: HTMLElement) {
+    constructor(componentFactory: ComponentFactory, controllerManager: ControllerManager, rootController: ControllerBase) {
         this._controllerManager = controllerManager;
         this._componentFactory = componentFactory;
-        this._rootElement = rootElement;
+        this._rootController = rootController;
+        this._rootElement = <HTMLElement>rootController.view.node;
     }
 
     /**

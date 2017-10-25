@@ -1,11 +1,12 @@
 
-import { DomManipulator } from "./dom";
+import { DomManipulator, CommonHtmlElement } from "./dom";
 import { ServiceManager } from "./service_management";
 import { ModuleManager, ModuleFactoryFn } from "./modules"
 import { register } from "./view/components/register"
 import { ComponentFactory, ComponentInserter, ControllerManager } from "./component"
 import { sizerFactory } from "./view/sizer/factory"
 import { SizerFactory } from "./view/sizer/base"
+import { Application } from "./application"
 
 
 export class OwlWebLib {
@@ -32,6 +33,8 @@ export class OwlWebLib {
 
     private _rootElement: HTMLElement;
 
+    private _application: Application;
+
     private _window: Window;
 
     private _componentInserter: ComponentInserter;
@@ -53,6 +56,7 @@ export class OwlWebLib {
 
     public run(window: Window, rootElement: HTMLElement) : void {
         this._rootElement = rootElement;
+        this._application = new Application();
         this._window = window;
 
         this._initialize();
@@ -89,7 +93,8 @@ export class OwlWebLib {
     private _initializeMembers() : void {
         this._domManipulator = new DomManipulator(this._window, this._rootElement);
         this._componentFactory = new ComponentFactory(this._serviceManager, this._domManipulator);
-        this._componentInserter = new ComponentInserter(this._componentFactory, this._controllerManager, this._rootElement);
+        this._application.setupApplication(<CommonHtmlElement>this._domManipulator.mapNode(this._rootElement));
+        this._componentInserter = new ComponentInserter(this._componentFactory, this._controllerManager, this._application);
     }
 
     private _initializeCommonServices() : void {

@@ -72,6 +72,12 @@ export abstract class AbstractRenderer implements IRenderer {
 
         return result;
     }
+
+    protected _copyContent(source: CommonHtmlElement, target: CommonHtmlElement) : void {
+        for (let c of source.chidlren) {
+            target.append(c);
+        }
+    }
 }
 
 

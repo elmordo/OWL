@@ -14,16 +14,7 @@ export class Renderer extends AbstractRenderer {
         let originalElement = <CommonHtmlElement>originalNode;
 
         this._setupClassNames(rootNode, options);
-
-        while (originalElement.element.children.length) {
-            let page: Element = originalElement.element.children.item(0);
-
-            if (page.tagName != "OWL:OWL-VERTICAL-BOX-ITEM")
-                throw new Error("Slider's children could be only 'owl:owl-vertical-box-item', but '" + page.tagName + "' found.");
-
-            originalElement.element.removeChild(page);
-            this._addItemFromTag(rootNode, page, -1, manipulator);
-        }
+        this._copyContent(<CommonHtmlElement>originalNode, rootNode);
 
         let result: RenderResult = new RenderResult(rootNode, entryNodes);
         return result;
@@ -40,38 +31,6 @@ export class Renderer extends AbstractRenderer {
 
         return result;
     }
-
-    public addItem(target: CommonHtmlElement, content: Node, index: number, manipulator: DomManipulator) {
-        let wrappedContent: CommonHtmlElement = this._wrapItem(content, manipulator);
-        this._addPageToTarget(target, wrappedContent, index);
-    }
-
-    protected _addItemFromTag(target: CommonHtmlElement, itemContainer: Element, index:number, domManipulator: DomManipulator) : void {
-        let containerElement: CommonHtmlElement = domManipulator.createNewFragment(Renderer.WRAPPER_TEMPLATE);
-        let contentSize = this._getAttributeValue(<CommonHtmlElement>domManipulator.mapNode(itemContainer), "size", "auto");
-        containerElement.attributes.set("size", contentSize);
-
-        while (itemContainer.childNodes.length)
-            containerElement.element.appendChild(itemContainer.childNodes.item(0));
-
-        this._addPageToTarget(target, containerElement, index);
-    }
-
-    private _addPageToTarget(target: CommonHtmlElement, pageContainer: CommonHtmlElement, index: number) : void {
-        let children = target.chidlren.filter((n) => { return n instanceof CommonHtmlElement; });
-
-        if (index == -1 || index >= children.length) {
-            target.append(pageContainer);
-        } else {
-            target.insertBeforeNode(pageContainer, children[index]);
-        }
-    }
-
-    protected _wrapItem(content: Node, domManipulator: DomManipulator) : CommonHtmlElement {
-        let wrapper: CommonHtmlElement = domManipulator.createNewFragment(Renderer.WRAPPER_TEMPLATE);
-        wrapper.append(domManipulator.mapNode(content));
-        return wrapper;
-    }
 }
 
 
@@ -79,10 +38,8 @@ export class Controller extends SizeableComponent {
 
     public repaint() : void {
         let rootElement: CommonHtmlElement = <CommonHtmlElement>this._view.rootNode;
-        let children: CommonNodeList = rootElement.chidlren;
-
-        let byContent: CommonNodeList, byAuto: CommonNodeList, byExplicit: CommonNodeList;
-        [byContent, byAuto, byExplicit] = this._categorizeChildren(children);
+        let byContent: ControllerBase[], byAuto: ControllerBase[], byExplicit: ControllerBase[];
+        [byContent, byAuto, byExplicit] = this._categorizeChildren(this.children);
 
         let availableSpace: number = this._getAvailableSize();
 
@@ -94,26 +51,25 @@ export class Controller extends SizeableComponent {
         this._processAutos(byAuto, availableSpace);
     }
 
-    private _categorizeChildren(children: CommonNodeList) : CommonNodeList[] {
-        let itemElements = this._getItemElements();
+    private _categorizeChildren(children: ControllerBase[]) : ControllerBase[][] {
+        let byContent: ControllerBase[] = new Array<ControllerBase>();
+        let byAuto: ControllerBase[] = new Array<ControllerBase>();
+        let byExplicit: ControllerBase[] = new Array<ControllerBase>();
 
-        let byContent: CommonNodeList = CommonNodeList.createInstance();
-        let byAuto: CommonNodeList = CommonNodeList.createInstance();
-        let byExplicit: CommonNodeList = CommonNodeList.createInstance();
-
-        itemElements.forEach((node) => {
-            if (node instanceof CommonHtmlElement) {
-                switch(node.attributes.get("size").value) {
+        children.forEach((c: ControllerBase) => {
+            if (c.type == "owlVerticalBoxItem") {
+                let bic: BoxItemController = <BoxItemController>c;
+                switch(bic.size) {
                     case "auto":
-                    byAuto.push(node);
+                    byAuto.push(c);
                     break;
 
                     case "content":
-                    byContent.push(node);
+                    byContent.push(c);
                     break;
 
                     default:
-                    byExplicit.push(node);
+                    byExplicit.push(c);
                     break;
                 }
             }
@@ -122,21 +78,23 @@ export class Controller extends SizeableComponent {
         return [byContent, byAuto, byExplicit];
     }
 
-    private _processExplicits(elements: CommonNodeList) : void {
-        elements.forEach((n) => {
-            let e: CommonHtmlElement = <CommonHtmlElement>n;
-            let height = e.attributes.get("size").value + "px";
-            e.styles.set("height", height);
+    private _processExplicits(controllers: ControllerBase[]) : void {
+        controllers.forEach((c) => {
+            let bic: BoxItemController = <BoxItemController>c;
+            let height = bic.size + "px";
+            (<CommonHtmlElement>bic.view).styles.set("height", height);
         });
     }
 
-    private _processAutos(elements: CommonNodeList, availableSpace: number) : void {
-        if (elements.length > 0) {
-            let perElement: number = availableSpace / elements.length;
+    private _processAutos(controllers: ControllerBase[], availableSpace: number) : void {
+        if (controllers.length > 0) {
+            let perElement: number = availableSpace / controllers.length;
             let perElementPx: string = perElement.toString() + "px";
 
-            elements.forEach((n) => {
-                let e: CommonHtmlElement = <CommonHtmlElement>n;
+            controllers.forEach((c) => {
+                let bic: BoxItemController = <BoxItemController>c;
+                let e: CommonHtmlElement = <CommonHtmlElement>bic.view;
+                console.log(perElementPx);
                 e.styles.set("height", perElementPx);
             });
         }
@@ -155,11 +113,11 @@ export class Controller extends SizeableComponent {
         return this._getItemContainer().size.height;
     }
 
-    private _getTotalHeight(elements: CommonNodeList) : number {
+    private _getTotalHeight(controllers: ControllerBase[]) : number {
         let result: number = 0;
 
-        elements.forEach((e) => {
-            result += (<CommonHtmlElement>e).size.height;
+        controllers.forEach((c) => {
+            result += (<CommonHtmlElement>c.view).size.height;
         });
 
         return result;
@@ -175,13 +133,34 @@ export class BoxItemRenderer extends AbstractRenderer {
         let root = manipulator.createNewFragment(BoxItemRenderer.TEMPLATE);
         let entries = new EntryNodeLookup();
         let result: RenderResult = new RenderResult(root, entries);
+
+        this._copyContent(originalNode, root);
+
         return result;
+    }
+
+    public getOptions(originalNode: CommonHtmlElement) : Object {
+        let options = super.getOptions(originalNode);
+        options["size"] = this._getAttributeValue(originalNode, "size", "auto");
+
+        return options;
     }
 }
 
 
 export class BoxItemController extends ControllerBase {
 
+    protected _size: string;
+
+    public setup(renderedContent: RenderResult, options: Object) : void {
+        super.setup(renderedContent, options);
+
+        this._size = options["size"];
+    }
+
+    get size(): string {
+        return this._size;
+    }
 }
 
 
