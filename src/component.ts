@@ -312,6 +312,11 @@ export class ComponentInserter {
 
 export class ControllerBase extends EventDispatcher {
 
+    static EVENT_CLICK = "click";
+    static EVENT_RESIZE = "resize";
+    static EVENT_REPAING = "repaint";
+    static EVENT_TRACKING_SIGNAL = "tracking_signal";
+
     /**
      * name of attribute with public id of the controller
      * @type {String}
@@ -329,6 +334,18 @@ export class ControllerBase extends EventDispatcher {
      * @type {number}
      */
     private _internalId: number;
+
+    /**
+     * parent component in hierarchy
+     * @type {ControllerBase}
+     */
+    private _parent: ControllerBase;
+
+    /**
+     * set of child components
+     * @type {ControllerBase[]}
+     */
+    private _children: ControllerBase[];
 
     /**
      * view representation of the component
@@ -373,6 +390,8 @@ export class ControllerBase extends EventDispatcher {
         this._view = null;
         this._serviceManager = null;
         this._domEventGateway = null;
+        this._parent = null;
+        this._children = new Array<ControllerBase>();
     }
 
     /**
@@ -443,6 +462,14 @@ export class ControllerBase extends EventDispatcher {
 
     get controllerManager(): ControllerManager {
         return this._controllerManager;
+    }
+
+    get parent(): ControllerBase {
+        return this._parent;
+    }
+
+    get children(): ControllerBase[] {
+        return this._children.slice(0, this._children.length);
     }
 }
 
