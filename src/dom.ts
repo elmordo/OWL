@@ -436,6 +436,19 @@ class StyleManager {
         this._classes = element.classList;
     }
 
+    public addClass(className: string) : void {
+        this._classes.add(className);
+    }
+
+    public getClasses() : string[] {
+        let result: string[] = new Array<string>();
+
+        for (let i = 0; i < this._classes.length; ++i)
+            result.push(this._classes.item(i));
+
+        return result;
+    }
+
     public set(name: string, val: string): void {
         this._styles[name] = val;
     }

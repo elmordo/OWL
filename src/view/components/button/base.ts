@@ -14,6 +14,7 @@ export abstract class ButtonRendererBase extends AbstractRenderer {
     public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
         let wrapper: RenderResult = this._renderWrapper(originalNode, manipulator, options);
         let button = this._renderButton(originalNode, manipulator, options);
+        this._setupClassNames(<CommonHtmlElement>wrapper.rootNode, options);
 
         this._insertButtonToWrapper(button, wrapper.entryNodes);
         this._setupLookup(button, wrapper.entryNodes);

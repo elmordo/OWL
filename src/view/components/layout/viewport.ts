@@ -13,6 +13,8 @@ export class Renderer extends AbstractRenderer {
         let rootNode: CommonHtmlElement = manipulator.createNewFragment(Renderer.TEMPLATE);
         let entryNodes: EntryNodeLookup = new EntryNodeLookup();
 
+        this._setupClassNames(rootNode, options);
+
         while (originalNode.node.childNodes.length)
             rootNode.node.appendChild(originalNode.node.firstChild);
 

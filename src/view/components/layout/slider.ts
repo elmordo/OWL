@@ -15,6 +15,8 @@ export class Renderer extends AbstractRenderer {
         let entryNodes: EntryNodeLookup = new EntryNodeLookup();
         let originalElement = <CommonHtmlElement>originalNode;
 
+        this._setupClassNames(rootNode, options);
+
         while (originalElement.element.children.length) {
             let page: Element = originalElement.element.children.item(0);
 

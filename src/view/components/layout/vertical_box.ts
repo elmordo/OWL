@@ -15,6 +15,8 @@ export class Renderer extends AbstractRenderer {
         let entryNodes: EntryNodeLookup = new EntryNodeLookup();
         let originalElement = <CommonHtmlElement>originalNode;
 
+        this._setupClassNames(rootNode, options);
+
         while (originalElement.element.children.length) {
             let page: Element = originalElement.element.children.item(0);
 
@@ -172,4 +174,4 @@ class ItemInfo {
 }
 
 
-export let register: Function = registerFunctionFactory("owl.component.layout.vertical-box", "owlVerticalBox", Renderer, Controller);
+export let register: Function = registerFunctionFactory("owl.component.layout.vertical_box", "owlVerticalBox", Renderer, Controller);

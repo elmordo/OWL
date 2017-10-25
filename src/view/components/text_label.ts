@@ -1,7 +1,7 @@
 
 import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../rendering"
 import { DomManipulator, CommonHtmlNode, CommonHtmlText, CommonHtmlElement } from "../../dom"
-import { ControllerBase, ComponentFactory, ComponentDescription } from "../../component"
+import { ControllerBase, registerFunctionFactory } from "../../component"
 import { ServiceManager, ServiceNamespace } from "../../service_management"
 
 
@@ -12,6 +12,19 @@ export class Renderer extends AbstractRenderer {
     static ENTRY_LABEL = "label";
 
     public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
+        let result: RenderResult = this._render(originalNode, manipulator, options);
+        this._setupClassNames(<CommonHtmlElement>result.rootNode, options);
+
+        return result;
+    }
+
+    public getOptions(originalNode: CommonHtmlNode): Object {
+        let result = super.getOptions(originalNode);
+        result["label"] = this._getAttributeValue(<CommonHtmlElement>originalNode, "label", "label");
+        return result;
+    }
+
+    protected _render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
         let button = manipulator.createNewFragment(Renderer.LABEL_TEMPLATE);
         let entryNodes = new EntryNodeLookup();
 
@@ -48,15 +61,4 @@ export class Controller extends ControllerBase {;
 }
 
 
-export function register(cm: ComponentFactory, sm: ServiceManager): void {
-    let baseNs = "owl.component.text_label";
-
-    let rendererName: string = baseNs + ".renderer";
-    let controllerName: string = baseNs + ".controller";
-
-    sm.registerService(rendererName, () => { return new Renderer(); });
-    sm.registerService(controllerName, () => { return new Controller(); });
-
-    let dsc: ComponentDescription = new ComponentDescription("owlTextLabel", rendererName, controllerName);
-    cm.registerComponent(dsc);
-}
+export let register = registerFunctionFactory("owl.component.text_label", "owlTextLabel", Renderer, Controller);
