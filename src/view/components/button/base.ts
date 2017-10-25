@@ -58,10 +58,6 @@ export class ButtonController extends ControllerBase {
 
     private _label: CommonHtmlText;
 
-    constructor() {
-        super();
-    }
-
     public setup(renderedContent: RenderResult, options: Object) : void {
         super.setup(renderedContent, options);
         this._label = <CommonHtmlText>renderedContent.getEntry(ButtonRendererBase.ENTRY_LABEL);

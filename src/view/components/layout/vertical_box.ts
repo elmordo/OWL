@@ -1,14 +1,12 @@
 import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../../../rendering"
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
-import { ComponentFactory, ComponentDescription, SizeableComponent, registerFunctionFactory } from "../../../component"
+import { ComponentFactory, ComponentDescription, SizeableComponent, registerFunctionFactory, ControllerBase } from "../../../component"
 
 
 export class Renderer extends AbstractRenderer {
 
     static TEMPLATE: string = "<div class='owl-vbox'></div>";
-
-    static WRAPPER_TEMPLATE: string = "<div class='owl-vbox-item'></div>";
 
     public render(originalNode: CommonHtmlNode, manipulator: DomManipulator, options: Object) : RenderResult {
         let rootNode: CommonHtmlElement = manipulator.createNewFragment(Renderer.TEMPLATE);
@@ -169,9 +167,23 @@ export class Controller extends SizeableComponent {
 }
 
 
-class ItemInfo {
+export class BoxItemRenderer extends AbstractRenderer {
+
+    static TEMPLATE: string = "<div class='owl-vbox-item'></div>";
+
+    public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
+        let root = manipulator.createNewFragment(BoxItemRenderer.TEMPLATE);
+        let entries = new EntryNodeLookup();
+        let result: RenderResult = new RenderResult(root, entries);
+        return result;
+    }
+}
+
+
+export class BoxItemController extends ControllerBase {
 
 }
 
 
 export let register: Function = registerFunctionFactory("owl.component.layout.vertical_box", "owlVerticalBox", Renderer, Controller);
+export let registerItem: Function = registerFunctionFactory("owl.component.layout.vertical_box_item", "owlVerticalBoxItem", BoxItemRenderer, BoxItemController);

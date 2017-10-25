@@ -48,11 +48,7 @@ export class Renderer extends Label.Renderer {
 }
 
 
-export class Controller extends Label.Controller {;
-
-    constructor() {
-        super();
-    }
+export class Controller extends Label.Controller {
 
 }
 

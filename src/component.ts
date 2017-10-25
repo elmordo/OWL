@@ -291,7 +291,7 @@ export class ComponentInserter {
         componentController.initialize();
 
         // TODO: delete these two rows
-        if (element.tagName == "OWL:OWL-SLIDER")
+        if (!componentController.parent)
             console.log(componentController);
 
         return componentController.view.node;
@@ -388,8 +388,16 @@ export class ControllerBase extends EventDispatcher {
      */
     private _id: string;
 
-    constructor() {
+    /**
+     * type of controller
+     * @type {string}
+     */
+    private _type: string;
+
+    constructor(type: string) {
         super()
+
+        this._type = type;
 
         this._internalId = ControllerBase._NEXT_ID++;
         this._view = null;
@@ -437,6 +445,9 @@ export class ControllerBase extends EventDispatcher {
         this.dispatchEvent(evt);
     }
 
+    protected _onTrackingReceived(evt: CustomEvent, sender: ControllerBase) : void {
+    }
+
     private _dispatchTrackingSignal() : void {
         let evt = new CustomEvent(ControllerBase.EVENT_TRACKING_SIGNAL, { detail: this, "bubbles": true });
         this._view.rootNode.node.dispatchEvent(evt);
@@ -472,6 +483,8 @@ export class ControllerBase extends EventDispatcher {
 
                 if (self._children.indexOf(sender) == -1)
                     self._children.push(sender);
+
+                self._onTrackingReceived(realEvt, sender);
             }
 
             return true;
@@ -507,6 +520,14 @@ export class ControllerBase extends EventDispatcher {
      */
     get view(): CommonHtmlNode {
         return this._view.rootNode;
+    }
+
+    /**
+     * return type of the controller
+     * @return {string} type of the controller
+     */
+    get type(): string {
+        return this._type;
     }
 
     /**
@@ -576,6 +597,7 @@ export class SizeableComponent extends ControllerBase {
 
 }
 
+
 export class DomEventGateway {
 
     private _controller: ControllerBase;
@@ -613,7 +635,7 @@ export function registerFunctionFactory(baseNs: string, name: string, renderer, 
         let controllerName: string = baseNs + ".controller";
 
         sm.registerService(rendererName, () => { return new renderer(); }, false);
-        sm.registerService(controllerName, () => { return new controller(); }, false);
+        sm.registerService(controllerName, () => { return new controller(name); }, false);
 
         let dsc: ComponentDescription = new ComponentDescription(name, rendererName, controllerName);
         cm.registerComponent(dsc);
