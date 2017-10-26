@@ -102,6 +102,10 @@ export class Controller extends SizeableComponent {
         this._duration = val;
     }
 
+    protected _onTracked(evt: CustomEvent) : void {
+        this.repaint();
+    }
+
     private _getItemContainer() : CommonHtmlElement {
         return <CommonHtmlElement>this._view.rootNode;
     }

@@ -452,7 +452,10 @@ export class ControllerBase extends EventDispatcher {
         this.dispatchEvent(evt);
     }
 
-    protected _onTrackingReceived(evt: CustomEvent, sender: ControllerBase) : void {
+    protected _onTrackingReceived(evt: CustomEvent) : void {
+    }
+
+    protected _onTracked(evt: CustomEvent) : void {
     }
 
     private _dispatchTrackingSignal() : void {
@@ -491,7 +494,8 @@ export class ControllerBase extends EventDispatcher {
                 if (self._children.indexOf(sender) == -1)
                     self._children.push(sender);
 
-                self._onTrackingReceived(realEvt, sender);
+                self._onTrackingReceived(realEvt);
+                sender._onTracked(realEvt);
             }
 
             return true;

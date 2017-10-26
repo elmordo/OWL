@@ -37,6 +37,7 @@ export class Renderer extends AbstractRenderer {
 export class Controller extends SizeableComponent {
 
     public repaint() : void {
+        super.repaint();
         let rootElement: CommonHtmlElement = <CommonHtmlElement>this._view.rootNode;
         let byContent: ControllerBase[], byAuto: ControllerBase[], byExplicit: ControllerBase[];
         [byContent, byAuto, byExplicit] = this._categorizeChildren(this.children);
@@ -49,6 +50,14 @@ export class Controller extends SizeableComponent {
         availableSpace -= this._getTotalHeight(byContent);
 
         this._processAutos(byAuto, availableSpace);
+    }
+
+    protected _onTrackingReceived(evt: CustomEvent) : void {
+        this.repaint();
+    }
+
+    protected _onTracked(evt: CustomEvent) : void {
+        this.repaint();
     }
 
     private _categorizeChildren(children: ControllerBase[]) : ControllerBase[][] {
