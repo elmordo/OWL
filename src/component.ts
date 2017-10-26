@@ -4,6 +4,7 @@ import { IRenderer, RenderResult } from "./rendering";
 import { DomManipulator, CommonHtmlNode, CommonHtmlElement } from "./dom";
 import { ISizer, SizerFactory } from "./view/sizer/base"
 import { EventDispatcher, DomEvent, OwlEvent } from "./events"
+import { PropertyWatchdog, WatchdogEventFactory } from "./dom_utils"
 
 /**
  * describe component and hold information required to create
@@ -334,6 +335,7 @@ export class ControllerBase extends EventDispatcher {
     static EVENT_RESIZE = "resize";
     static EVENT_REPAING = "repaint";
     static EVENT_TRACKING_SIGNAL = "tracking_signal";
+    static EVENT_TRACKED = "tracked";
 
     /**
      * name of attribute with public id of the controller
@@ -407,6 +409,12 @@ export class ControllerBase extends EventDispatcher {
      */
     private _type: string;
 
+    /**
+     * watch for size change
+     * @type {PropertyWatchdog}
+     */
+    private _sizeWatchdog: PropertyWatchdog;
+
     constructor(type: string) {
         super()
 
@@ -432,6 +440,11 @@ export class ControllerBase extends EventDispatcher {
         this._setupTracking();
 
         this._controllerManager = <ControllerManager>this._serviceManager.getServiceByPath("owl.controllerManager");
+        this._sizeWatchdog = new PropertyWatchdog(
+            this,
+            this._createWatchdogEventFactory(ControllerBase.EVENT_RESIZE),
+            this._view.rootNode.node,
+            ["offsetWidth", "offsetHeight"]);
     }
 
     /**
@@ -446,6 +459,7 @@ export class ControllerBase extends EventDispatcher {
      */
     public repaint() : void {
         this._dispatchLocalEvent(ControllerBase.EVENT_REPAING);
+        this._sizeWatchdog.watch();
     }
 
     /**
@@ -462,6 +476,10 @@ export class ControllerBase extends EventDispatcher {
     }
 
     protected _onTracked(evt: CustomEvent) : void {
+    }
+
+    protected _createWatchdogEventFactory(evtType: string): WatchdogEventFactory {
+        return (dispatcher, diff) => { return new OwlEvent(evtType); };
     }
 
     private _dispatchTrackingSignal() : void {
@@ -501,7 +519,9 @@ export class ControllerBase extends EventDispatcher {
                     self._children.push(sender);
 
                 self._onTrackingReceived(realEvt);
-                sender._onTracked(realEvt);
+
+                let trackedEvt = new CustomEvent(ControllerBase.EVENT_TRACKED, { "detail": self });
+                sender._onTracked(trackedEvt);
             }
 
             return true;

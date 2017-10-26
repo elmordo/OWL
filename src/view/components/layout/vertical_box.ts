@@ -50,6 +50,7 @@ export class Controller extends SizeableComponent {
         availableSpace -= this._getTotalHeight(byContent);
 
         this._processAutos(byAuto, availableSpace);
+        this._dispatchLocalEvent(ControllerBase.EVENT_RESIZE);
     }
 
     protected _onTrackingReceived(evt: CustomEvent) : void {
@@ -91,7 +92,7 @@ export class Controller extends SizeableComponent {
         controllers.forEach((c) => {
             let bic: BoxItemController = <BoxItemController>c;
             let height = bic.size + "px";
-            (<CommonHtmlElement>bic.view).styles.set("height", height);
+            bic.setRealSize(height);
         });
     }
 
@@ -102,9 +103,7 @@ export class Controller extends SizeableComponent {
 
             controllers.forEach((c) => {
                 let bic: BoxItemController = <BoxItemController>c;
-                let e: CommonHtmlElement = <CommonHtmlElement>bic.view;
-                console.log(perElementPx);
-                e.styles.set("height", perElementPx);
+                bic.setRealSize(perElementPx);
             });
         }
     }
@@ -165,6 +164,11 @@ export class BoxItemController extends ControllerBase {
         super.setup(renderedContent, options);
 
         this._size = options["size"];
+    }
+
+    public setRealSize(size: string) : void {
+        this._view.rootElement.styles.set("height", size);
+        this.repaint();
     }
 
     get size(): string {
