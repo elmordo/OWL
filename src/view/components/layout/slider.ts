@@ -41,7 +41,7 @@ export class Controller extends SizeableComponent {
 
     public goto(pageName: string) : void {
         let container: CommonHtmlElement = this._getItemContainer();
-        let targetItem: CommonHtmlElement = this._findItemByName(container, pageName);
+        let targetItem: CommonHtmlElement = this._findItemByName(pageName);
         let targetScroll = this._getTargetPosition(targetItem);
 
         this._scroll(container, targetScroll);
@@ -113,20 +113,14 @@ export class Controller extends SizeableComponent {
         }, timeStep);
     }
 
-    private _findItemByName(container: CommonHtmlElement, name: string) : CommonHtmlElement {
+    private _findItemByName(name: string) : CommonHtmlElement {
         let result: CommonHtmlElement = null;
-        let children: CommonNodeList = container.chidlren;
 
-        for (let child of children) {
-            let childElement: CommonHtmlElement = <CommonHtmlElement>child;
+        for (let child of this.children) {
+            let typedChild: SliderPageController = <SliderPageController>child;
 
-            try {
-                if (childElement.attributes.get("name").value == name) {
-                    result = childElement;
-                    break;
-                }
-            } catch (err) {
-                console.log(err);
+            if (typedChild.pageName == name) {
+                result = <CommonHtmlElement>typedChild.view;
             }
         }
 
@@ -151,11 +145,32 @@ export class SliderPageRenderer extends AbstractRenderer {
 
         return result;
     }
+
+    public getOptions(rootNode: CommonHtmlElement) : Object {
+        let result = super.getOptions(rootNode);
+        result["name"] = this._getAttributeValue(rootNode, "name", null);
+
+        return result;
+    }
 }
 
 
 export class SliderPageController extends ControllerBase {
 
+    private _pageName: string;
+
+    public setup(renderedContent: RenderResult, options: Object) : void {
+        super.setup(renderedContent, options);
+        this._pageName = options["name"];
+    }
+
+    get pageName(): string {
+        return this._pageName;
+    }
+
+    set pageName(val: string) {
+        this._pageName = val;
+    }
 }
 
 
