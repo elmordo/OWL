@@ -61,6 +61,11 @@ export class Controller extends SizeableComponent {
     }
 
     protected _onTracked(evt: CustomEvent) : void {
+        let senderController: ControllerBase = <ControllerBase>evt.detail;
+        senderController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
+            this.repaint();
+        });
+
         this.repaint();
     }
 

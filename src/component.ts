@@ -2,7 +2,7 @@
 import { ServiceManager } from "./service_management";
 import { IRenderer, RenderResult } from "./rendering";
 import { DomManipulator, CommonHtmlNode, CommonHtmlElement } from "./dom";
-import { ISizer, SizerFactory } from "./view/sizer/base"
+import { ISizer, ASizer, SizerFactory } from "./view/sizer/base"
 import { EventDispatcher, DomEvent, OwlEvent } from "./events"
 import { PropertyWatchdog, WatchdogEventFactory } from "./dom_utils"
 
@@ -620,6 +620,7 @@ export class SizeableComponent extends ControllerBase {
 
     public repaint() : void {
         this._sizer.updateSize();
+        super.repaint();
     }
 
     public _setupSizer(options: Object) : void {
@@ -630,6 +631,8 @@ export class SizeableComponent extends ControllerBase {
         sizer.setup(this._view.rootNode, options);
         this._sizer = sizer;
         this._sizer.updateSize();
+
+        this._sizer.addEventListener(ASizer.EVENT_RESIZE, (evt) => { this.repaint(); });
     }
 
 }

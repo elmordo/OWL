@@ -58,6 +58,11 @@ export class Controller extends SizeableComponent {
     }
 
     protected _onTracked(evt: CustomEvent) : void {
+        let senderController: ControllerBase = <ControllerBase>evt.detail;
+        senderController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
+            this.repaint();
+        });
+
         this.repaint();
     }
 
@@ -168,6 +173,15 @@ export class BoxItemController extends ControllerBase {
 
     public setRealSize(size: string) : void {
         this._view.rootElement.styles.set("height", size);
+        this.repaint();
+    }
+
+    protected _onTracked(evt: CustomEvent) : void {
+        let senderController: ControllerBase = <ControllerBase>evt.detail;
+        senderController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
+            this.repaint();
+        });
+
         this.repaint();
     }
 

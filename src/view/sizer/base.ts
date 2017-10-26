@@ -1,10 +1,11 @@
 import { CommonHtmlNode, CommonHtmlElement } from "../../dom"
+import { EventDispatcher, OwlEvent } from "../../events"
 
 
 /**
  * common sizer interface
  */
-export interface ISizer {
+export interface ISizer extends EventDispatcher {
 
     /**
      * update size of the sized element
@@ -72,7 +73,9 @@ export class SizerFactory {
 /**
  * the abstract sizer with common shared functionality
  */
-export abstract class ASizer implements ISizer {
+export abstract class ASizer extends EventDispatcher implements ISizer {
+
+    static EVENT_RESIZE = "resize";
 
     /**
      * node to size
@@ -85,6 +88,10 @@ export abstract class ASizer implements ISizer {
      * @type {Object}
      */
     protected _options: Object;
+
+    private _oldWidth: number = 0;
+
+    private _oldHeight: number = 0;
 
     /**
      * update size of the node
@@ -103,6 +110,16 @@ export abstract class ASizer implements ISizer {
 
     public teardown() : void {
         // do nothing
+    }
+
+    protected _dispatchResizeEventIfChanged(newWidth: number, newHeight: number) : void {
+        if (this._oldWidth != newWidth || this._oldHeight != newHeight) {
+            this._oldWidth = newWidth;
+            this._oldHeight = newHeight;
+
+            let event: OwlEvent = new OwlEvent(ASizer.EVENT_RESIZE);
+            this.dispatchEvent(event);
+        }
     }
 }
 
@@ -128,6 +145,8 @@ export class FitParent extends ASizer {
         let styles = element.styles;
         styles.set("width", parent.offsetWidth + "px");
         styles.set("height", parent.offsetHeight + "px");
+
+        this._dispatchResizeEventIfChanged(parent.offsetWidth, parent.offsetHeight);
     }
 
     /**
@@ -165,6 +184,7 @@ export class FitWindow extends ASizer {
         let element = <CommonHtmlElement>this._node;
         element.styles.set("width", window.innerWidth + "px");
         element.styles.set("height", window.innerHeight + "px");
+        this._dispatchResizeEventIfChanged(window.innerWidth, window.innerHeight);
     }
 
     /**
