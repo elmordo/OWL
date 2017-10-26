@@ -57,6 +57,7 @@ export class OwlWebLib {
     public run(window: Window, rootElement: HTMLElement) : void {
         this._rootElement = rootElement;
         this._application = new Application();
+        console.log(this._application);
         this._window = window;
 
         this._initialize();
@@ -87,14 +88,14 @@ export class OwlWebLib {
         this._initializeMembers();
         this._initializeCommonServices();
         this._initializeComponents();
+        this._initializeApplication();
+        this._initializeInserter();
         this._moduleManager.initializeModules(this._serviceManager);
     }
 
     private _initializeMembers() : void {
         this._domManipulator = new DomManipulator(this._window, this._rootElement);
         this._componentFactory = new ComponentFactory(this._serviceManager, this._domManipulator);
-        this._application.setupApplication(<CommonHtmlElement>this._domManipulator.mapNode(this._rootElement));
-        this._componentInserter = new ComponentInserter(this._componentFactory, this._controllerManager, this._application);
     }
 
     private _initializeCommonServices() : void {
@@ -107,5 +108,14 @@ export class OwlWebLib {
 
     private _initializeComponents() : void {
         register(this._componentFactory, this._serviceManager);
+    }
+
+    private _initializeApplication() : void {
+        this._application.serviceManager = this._serviceManager;
+        this._application.setupApplication(<CommonHtmlElement>this._domManipulator.mapNode(this._rootElement));
+    }
+
+    private _initializeInserter(): void {
+        this._componentInserter = new ComponentInserter(this._componentFactory, this._controllerManager, this._application);
     }
 }

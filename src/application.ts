@@ -11,6 +11,7 @@ export class Application extends ControllerBase {
     }
 
     public setupApplication(rootElement: CommonHtmlElement) : void {
-        this._view = new RenderResult(rootElement, new EntryNodeLookup());
+        let renderResult: RenderResult = new RenderResult(rootElement, new EntryNodeLookup());
+        this.setup(renderResult, new Object());
     }
 }
