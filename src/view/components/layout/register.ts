@@ -9,6 +9,7 @@ import * as VBox from "./vertical_box"
 export function register(cf: ComponentFactory, sm: ServiceManager): void {
     Viewport.register(cf, sm);
     Slider.register(cf, sm);
+    Slider.registerPage(cf, sm);
     VBox.register(cf, sm);
     VBox.registerItem(cf, sm);
 }
