@@ -128,6 +128,14 @@ export class RenderResult {
     }
 
     /**
+     * return root node as element
+     * @return {CommonHtmlElement} root node retyped as element
+     */
+    get rootElement(): CommonHtmlElement {
+        return <CommonHtmlElement>this._rootNode;
+    }
+
+    /**
      * entry nodes accessor
      * @return {EntryNodeLookup} entry nodes
      */
