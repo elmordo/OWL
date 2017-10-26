@@ -257,7 +257,13 @@ export class ComponentInserter {
 
         while(currentNode) {
             let nodeToProcess: Node = currentNode;
-            walker.currentNode = this._processElement(<HTMLElement>nodeToProcess);
+
+            try {
+                walker.currentNode = this._processElement(<HTMLElement>nodeToProcess);
+            } catch (err) {
+                console.error(err);
+            }
+
             currentNode = walker.nextNode();
         }
     }
