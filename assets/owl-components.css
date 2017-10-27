@@ -14,7 +14,12 @@ html { overflow: hidden; }
 
 .owl-slider { position: relative; overflow: auto; box-sizing: border-box; }
 .owl-slider-page { width: 100%; height: 100%; position: relative;  }
+
 .owl-vbox-item { width: 100%; position: relative;  }
+
+.owl-hbox { display: flex; flex-direction: row; }
+.owl-hbox-item { flex: auto; height: 100%; background: red; }
+#mdn { background: blue; width: 100px; flex: none; }
 
 .owl-floating-box { position: absolute; }
 

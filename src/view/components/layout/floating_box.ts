@@ -60,7 +60,6 @@ export class Controller extends ControllerBase {
     }
 
     public repaint() : void {
-        console.log("prdel");
         if (!this.parent) return;
 
         this._resolveVerticalPosition();

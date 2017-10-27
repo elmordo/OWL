@@ -6,7 +6,7 @@ import { ComponentFactory, ComponentDescription, SizeableComponent, registerFunc
 
 export class Renderer extends AbstractRenderer {
 
-    static TEMPLATE: string = "<div class='owl-vbox'></div>";
+    static TEMPLATE: string = "<div class='owl-hbox'></div>";
 
     public render(originalNode: CommonHtmlNode, manipulator: DomManipulator, options: Object) : RenderResult {
         let rootNode: CommonHtmlElement = manipulator.createNewFragment(Renderer.TEMPLATE);
@@ -72,7 +72,7 @@ export class Controller extends SizeableComponent {
         let byExplicit: ControllerBase[] = new Array<ControllerBase>();
 
         children.forEach((c: ControllerBase) => {
-            if (c.type == "owlVerticalBoxItem") {
+            if (c.type == "owlHorizontalBoxItem") {
                 let bic: BoxItemController = <BoxItemController>c;
                 switch(bic.size) {
                     case "auto":
@@ -140,7 +140,7 @@ export class Controller extends SizeableComponent {
 
 export class BoxItemRenderer extends AbstractRenderer {
 
-    static TEMPLATE: string = "<div class='owl-vbox-item'></div>";
+    static TEMPLATE: string = "<div class='owl-hbox-item'></div>";
 
     public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
         let root = manipulator.createNewFragment(BoxItemRenderer.TEMPLATE);
@@ -193,5 +193,5 @@ export class BoxItemController extends ControllerBase {
 }
 
 
-export let register: Function = registerFunctionFactory("owl.component.layout.vertical_box", "owlVerticalBox", Renderer, Controller);
-export let registerItem: Function = registerFunctionFactory("owl.component.layout.vertical_box_item", "owlVerticalBoxItem", BoxItemRenderer, BoxItemController);
+export let register: Function = registerFunctionFactory("owl.component.layout.horizontal_box", "owlHorizontalBox", Renderer, Controller);
+export let registerItem: Function = registerFunctionFactory("owl.component.layout.horizontal_box_item", "owlHorizontalBoxItem", BoxItemRenderer, BoxItemController);
