@@ -621,6 +621,7 @@ export class SizeableComponent extends ControllerBase {
     public repaint() : void {
         this._sizer.updateSize();
         super.repaint();
+        this._dispatchLocalEvent(ControllerBase.EVENT_RESIZE);
     }
 
     public _setupSizer(options: Object) : void {
