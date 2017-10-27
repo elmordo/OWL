@@ -60,10 +60,13 @@ export class Controller extends ControllerBase {
     }
 
     public repaint() : void {
+        console.log("prdel");
         if (!this.parent) return;
 
         this._resolveVerticalPosition();
         this._resolveHorizontalPosition();
+
+        super.repaint();
     }
 
     protected _onTracked(evt: CustomEvent): void {
@@ -80,6 +83,7 @@ export class Controller extends ControllerBase {
         if (this._verticalAlign != null) {
             let position = this._getMiddlePositionInContainer("height");
             this._view.rootElement.styles.set("top", position.toString() + "px");
+            console.log(position);
         } else if (this._top != null) {
             this._view.rootElement.styles.set("top", this._top);
         } else if (this._bottom != null)  {
@@ -90,6 +94,7 @@ export class Controller extends ControllerBase {
     protected _resolveHorizontalPosition(): void {
         if (this._horizontalAlign != null) {
             let position = this._getMiddlePositionInContainer("width");
+            console.log(position);
             this._view.rootElement.styles.set("left", position.toString() + "px");
         } else if (this._left != null) {
             this._view.rootElement.styles.set("left", this._left);
