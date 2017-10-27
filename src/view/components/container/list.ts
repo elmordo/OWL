@@ -10,35 +10,47 @@ export class Renderer extends AbstractRenderer {
     static TEMPLATE = "<div class='owl-list'></div>";
     static TEMPLATE_ORDERED = "<ol></ol>";
     static TEMPLATE_UNORDERED = "<ul></ul>";
+    static TEMPLATE_SIMPLE = "<ul class='owl-list-simple'></ul>";
 
     public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
         let rootNode: CommonHtmlElement = manipulator.createNewFragment(Renderer.TEMPLATE);
+        console.log(rootNode, options);
 
         this._setupClassNames(rootNode, options);
+        this._setupId(rootNode, options);
 
         let entryNodes: EntryNodeLookup = new EntryNodeLookup();
         let innerContainer = this._renderInnerContainer(options["type"], manipulator);
+        this._copyContent(originalNode, innerContainer);
 
         entryNodes["itemContainer"] = innerContainer;
         rootNode.append(innerContainer);
-        this._copyContent(originalNode, innerContainer);
 
         return new RenderResult(rootNode, entryNodes);
     }
 
     public getOptions(node: CommonHtmlElement) : Object {
         let result = super.getOptions(node);
-        result = this._getAttributeValue(node, "type", "unordered");
+        result["type"] = this._getAttributeValue(node, "type", "simple");
         return result;
     }
 
     protected _renderInnerContainer(listType: string, manipulator: DomManipulator) : CommonHtmlElement {
         let template: string;
 
-        if (listType == "ordered")
+        switch (listType) {
+            case "ordered":
             template = Renderer.TEMPLATE_ORDERED;
-        else
+            break;
+
+            case "unordered":
             template = Renderer.TEMPLATE_UNORDERED;
+            break;
+
+            default:
+            template = Renderer.TEMPLATE_SIMPLE;
+            break;
+        }
 
         let inner: CommonHtmlElement = manipulator.createNewFragment(template);
         return inner;

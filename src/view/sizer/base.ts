@@ -142,13 +142,6 @@ export class FitParent extends ASizer {
         let parent: HTMLElement = this._getOffsetParent();
         let element = <CommonHtmlElement>this._node;
 
-        let styles = element.styles;
-        styles.set("width", parent.clientWidth + "px");
-        styles.set("height", parent.clientHeight + "px");
-
-        styles.set("width", "100%");
-        styles.set("height", "100%");
-
         this._dispatchResizeEventIfChanged(parent.clientWidth, parent.clientHeight);
     }
 
@@ -160,6 +153,11 @@ export class FitParent extends ASizer {
     public setup(node: CommonHtmlNode, options: Object): void {
         super.setup(node, options);
         this._callback = () => { this.updateSize() };
+
+        let styles = (<CommonHtmlElement>node).styles;
+        styles.set("width", "100%");
+        styles.set("height", "100%");
+        styles.set("height", "-webkit-fill-available");
 
         window.addEventListener("resize", this._callback);
     }
