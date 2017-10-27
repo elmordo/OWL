@@ -146,6 +146,9 @@ export class FitParent extends ASizer {
         styles.set("width", parent.clientWidth + "px");
         styles.set("height", parent.clientHeight + "px");
 
+        styles.set("width", "100%");
+        styles.set("height", "100%");
+
         this._dispatchResizeEventIfChanged(parent.clientWidth, parent.clientHeight);
     }
 

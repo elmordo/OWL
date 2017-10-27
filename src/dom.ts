@@ -449,6 +449,10 @@ class StyleManager {
         return result;
     }
 
+    public removeClass(className: string) : void {
+        this._classes.remove(className);
+    }
+
     public set(name: string, val: string): void {
         this._styles[name] = val;
     }

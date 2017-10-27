@@ -16,11 +16,11 @@ html { overflow: hidden; }
 .owl-slider-page { width: 100%; height: 100%; position: relative;  }
 
 .owl-vbox { display: flex; flex-direction: column; }
-.owl-vbox-item { width: 100%; position: relative; flex: auto;  }
+.owl-vbox-item { flex: auto; width: 100%; position: relative; }
+.owl-vbox-item.owl-box-size-content { flex: initial; }
 
 .owl-hbox { display: flex; flex-direction: row; }
-.owl-hbox-item { flex: auto; height: 100%; background: red; }
-#mdn { background: blue; width: 100px; flex: none; }
+.owl-hbox-item { flex: 2; height: 100%; position: relative; }
 
 .owl-floating-box { position: absolute; }
 

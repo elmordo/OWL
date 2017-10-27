@@ -80,10 +80,20 @@ export class BoxItemController extends ControllerBase {
 
     protected _size: string;
 
+    protected _oldSize: string;
+
     public setup(renderedContent: RenderResult, options: Object) : void {
         super.setup(renderedContent, options);
 
         this._size = options["size"];
+    }
+
+    public repaint() : void {
+        super.repaint();
+
+        if (this._oldSize != this._size) {
+            this._updateSize();
+        }
     }
 
     public setRealSize(size: string) : void {
@@ -98,6 +108,29 @@ export class BoxItemController extends ControllerBase {
         });
 
         this.repaint();
+    }
+
+    protected _updateSize(): void {
+        let oldClass: string = this._getClassBySize(this._oldSize);
+        let newClass: string = this._getClassBySize(this._size);
+
+        if (oldClass)
+            this._view.rootElement.styles.removeClass(oldClass);
+
+        if (newClass)
+            this._view.rootElement.styles.addClass(newClass);
+
+        this._oldSize = this._size;
+    }
+
+    protected _getClassBySize(sizeType: string): string {
+        switch (sizeType) {
+            case "content":
+            return "owl-box-size-content";
+
+            default:
+            return null;
+        }
     }
 
     get size(): string {
