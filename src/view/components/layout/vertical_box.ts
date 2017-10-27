@@ -148,6 +148,7 @@ export class BoxItemRenderer extends AbstractRenderer {
         let result: RenderResult = new RenderResult(root, entries);
 
         this._copyContent(originalNode, root);
+        this._setupClassNames(root, options);
 
         return result;
     }

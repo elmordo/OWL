@@ -8,7 +8,7 @@ html { overflow: hidden; }
 .owl-vpadding-30 { padding-top: 30px; padding-bottom: 30px; }
 .owl-hpadding-30 { padding-left: 30px; padding-right: 30px; }
 
-.owl-align-right { right: 0; text-align: right; margin-left: auto; }
+.owl-align-right>* { right: 0; text-align: right; margin-left: auto; }
 
 .owl-viewport { left: 0px; top: 0px; }
 

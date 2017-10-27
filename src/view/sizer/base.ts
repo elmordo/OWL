@@ -139,14 +139,14 @@ export class FitParent extends ASizer {
      * update element size
      */
     public updateSize(): void {
-        let parent: HTMLElement = this._node.node.parentElement;
+        let parent: HTMLElement = this._getOffsetParent();
         let element = <CommonHtmlElement>this._node;
 
         let styles = element.styles;
-        styles.set("width", parent.offsetWidth + "px");
-        styles.set("height", parent.offsetHeight + "px");
+        styles.set("width", parent.clientWidth + "px");
+        styles.set("height", parent.clientHeight + "px");
 
-        this._dispatchResizeEventIfChanged(parent.offsetWidth, parent.offsetHeight);
+        this._dispatchResizeEventIfChanged(parent.clientWidth, parent.clientHeight);
     }
 
     /**
@@ -154,7 +154,7 @@ export class FitParent extends ASizer {
      * @param {CommonHtmlNode} node node to manage
      * @param {Object} options options
      */
-    public setup(node: CommonHtmlNode, options: Object) : void {
+    public setup(node: CommonHtmlNode, options: Object): void {
         super.setup(node, options);
         this._callback = () => { this.updateSize() };
 
@@ -164,8 +164,20 @@ export class FitParent extends ASizer {
     /**
      * remove registered event listeners
      */
-    public teardown() : void {
+    public teardown(): void {
         window.removeEventListener("resize", this._callback);
+    }
+
+    private _getOffsetParent(): HTMLElement {
+        let parent: HTMLElement = <HTMLElement>(<HTMLElement>this._node.node).offsetParent;
+
+        if (parent == null)
+            parent = this._node.node.parentElement;
+
+        if (parent == null)
+            throw new Error("Parent was not found");
+
+        return parent;
     }
 }
 
