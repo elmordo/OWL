@@ -16,8 +16,8 @@ html { overflow: hidden; }
 .owl-slider-page { width: 100%; height: 100%; position: relative;  }
 
 .owl-vbox { display: flex; flex-direction: column; }
-.owl-vbox-item { flex: auto; width: 100%; position: relative; }
-.owl-vbox-item.owl-box-size-content { flex: initial; }
+.owl-vbox-item { flex: auto; width: 100%; height: 100%; position: relative; }
+.owl-vbox-item.owl-box-size-content { flex: initial; height: auto; }
 
 .owl-hbox { display: flex; flex-direction: row; }
 .owl-hbox-item { flex: 2; height: 100%; position: relative; }
