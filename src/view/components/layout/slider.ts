@@ -169,6 +169,11 @@ export class SliderPageController extends ControllerBase {
         this._pageName = options["name"];
     }
 
+    protected _onTracked(evt: CustomEvent) : void {
+        let controller: ControllerBase = <ControllerBase>evt.detail;
+        controller.addEventListener(ControllerBase.EVENT_RESIZE, (evt) => { this.repaint(); });
+    }
+
     get pageName(): string {
         return this._pageName;
     }
