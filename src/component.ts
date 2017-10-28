@@ -609,36 +609,6 @@ export class ControllerBase extends EventDispatcher {
 }
 
 
-export class SizeableComponent extends ControllerBase {
-
-    private _sizer: ISizer;
-
-    public setup(renderedContent: RenderResult, options: Object) : void {
-        super.setup(renderedContent, options);
-        this._setupSizer(options);
-    }
-
-    public repaint() : void {
-        this._sizer.updateSize();
-        super.repaint();
-        this._dispatchLocalEvent(ControllerBase.EVENT_RESIZE);
-    }
-
-    public _setupSizer(options: Object) : void {
-        let sizerType: string = options["sizer"];
-        let sizerFactory: SizerFactory = <SizerFactory>this.serviceManager.getServiceByPath("owl.sizerFactory");
-        let sizer = sizerFactory.getSizer(sizerType);
-
-        sizer.setup(this._view.rootNode, options);
-        this._sizer = sizer;
-        this._sizer.updateSize();
-
-        this._sizer.addEventListener(ASizer.EVENT_RESIZE, (evt) => { this.repaint(); });
-    }
-
-}
-
-
 export class DomEventGateway {
 
     private _controller: ControllerBase;

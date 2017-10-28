@@ -1,8 +1,9 @@
 
 import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../../rendering"
-import { SizeableComponent, ComponentFactory, ComponentDescription, registerFunctionFactory } from "../../../component"
+import { ComponentFactory, ComponentDescription, registerFunctionFactory } from "../../../component"
 import { ServiceManager } from "../../../service_management"
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator } from "../../../dom"
+import { SizeableComponent } from "../base"
 
 
 export class Renderer extends AbstractRenderer {

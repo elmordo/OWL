@@ -1,7 +1,7 @@
 import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../../../rendering"
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
-import { ComponentFactory, ComponentDescription, SizeableComponent, registerFunctionFactory, ControllerBase } from "../../../component"
+import { ComponentFactory, ComponentDescription, registerFunctionFactory, ControllerBase } from "../../../component"
 import { BaseBoxController, BaseBoxRenderer, BaseBoxItemRenderer, BaseBoxItemController } from "./vh_base"
 
 
