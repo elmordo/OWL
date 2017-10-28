@@ -2,107 +2,31 @@ import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../.
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
 import { ComponentFactory, ComponentDescription, SizeableComponent, registerFunctionFactory, ControllerBase } from "../../../component"
+import { BaseBoxController, BaseBoxRenderer, BaseBoxItemRenderer, BaseBoxItemController } from "./vh_base"
 
 
-export class Renderer extends AbstractRenderer {
+export class Renderer extends BaseBoxRenderer {
 
-    static TEMPLATE: string = "<div class='owl-hbox'></div>";
-
-    public render(originalNode: CommonHtmlNode, manipulator: DomManipulator, options: Object) : RenderResult {
-        let rootNode: CommonHtmlElement = manipulator.createNewFragment(Renderer.TEMPLATE);
-        let entryNodes: EntryNodeLookup = new EntryNodeLookup();
-        let originalElement = <CommonHtmlElement>originalNode;
-
-        this._setupClassNames(rootNode, options);
-        this._copyContent(<CommonHtmlElement>originalNode, rootNode);
-
-        let result: RenderResult = new RenderResult(rootNode, entryNodes);
-        return result;
-    }
-
-    /**
-     * read options from the original node
-     * @param {CommonHtmlNode} originalNode original node
-     * @return {Object} parsed options
-     */
-    public getOptions(originalNode: CommonHtmlNode): Object {
-        let result: Object = super.getOptions(originalNode);
-        result["sizer"] = super._getAttributeValue(<CommonHtmlElement>originalNode, "sizer", "fitParent");
-
-        return result;
+    protected _setupContainerClasses(root: CommonHtmlElement): void {
+        root.styles.addClass("owl-hbox");
     }
 }
 
 
-export class Controller extends SizeableComponent {
+export class Controller extends BaseBoxController {
 
-    protected _onTrackingReceived(evt: CustomEvent) : void {
-        this.repaint();
-    }
-
-    protected _onTracked(evt: CustomEvent) : void {
-        let senderController: ControllerBase = <ControllerBase>evt.detail;
-        senderController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
-            this.repaint();
-        });
-
-        this.repaint();
-    }
 }
 
 
-export class BoxItemRenderer extends AbstractRenderer {
+export class BoxItemRenderer extends BaseBoxItemRenderer {
 
-    static TEMPLATE: string = "<div class='owl-hbox-item'></div>";
-
-    public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
-        let root = manipulator.createNewFragment(BoxItemRenderer.TEMPLATE);
-        let entries = new EntryNodeLookup();
-        let result: RenderResult = new RenderResult(root, entries);
-
-        this._copyContent(originalNode, root);
-        this._setupId(root, options);
-        this._setupClassNames(root, options);
-
-        return result;
-    }
-
-    public getOptions(originalNode: CommonHtmlElement) : Object {
-        let options = super.getOptions(originalNode);
-        options["size"] = this._getAttributeValue(originalNode, "size", "auto");
-
-        return options;
+    protected _setupContainerClasses(root: CommonHtmlElement): void {
+        root.styles.addClass("owl-hbox-item");
     }
 }
 
+export class BoxItemController extends BaseBoxItemController {
 
-export class BoxItemController extends ControllerBase {
-
-    protected _size: string;
-
-    public setup(renderedContent: RenderResult, options: Object) : void {
-        super.setup(renderedContent, options);
-
-        this._size = options["size"];
-    }
-
-    public setRealSize(size: string) : void {
-        this._view.rootElement.styles.set("height", size);
-        this.repaint();
-    }
-
-    protected _onTracked(evt: CustomEvent) : void {
-        let senderController: ControllerBase = <ControllerBase>evt.detail;
-        senderController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
-            this.repaint();
-        });
-
-        this.repaint();
-    }
-
-    get size(): string {
-        return this._size;
-    }
 }
 
 

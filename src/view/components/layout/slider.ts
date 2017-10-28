@@ -91,7 +91,7 @@ export class Controller extends SizeableComponent {
 
     private _slideSmooth(container: CommonHtmlElement, target: number) : void {
         let timeLeft: number = this._duration;
-        let timeStep: number = 1000 / 30;
+        let timeStep: number = 1000 / 60;
         let timeSteps: number = this._duration / timeStep;
 
         let startScroll: number = container.element.scrollTop;
