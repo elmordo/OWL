@@ -1,5 +1,5 @@
 
-import { DomManipulator, CommonHtmlNode, CommonHtmlElement } from "./dom";
+import { DomManipulator, CommonHtmlNode, CommonHtmlElement, CommonHtmlAttribute } from "./dom";
 
 /**
  * interface for all renderers
@@ -45,9 +45,16 @@ export abstract class AbstractRenderer implements IRenderer {
 
         if (originalNode instanceof CommonHtmlElement) {
             let element = <CommonHtmlElement>originalNode;
+            let attributes: CommonHtmlAttribute[] = element.attributes.getIterator();
+
+            for (let attr of attributes) {
+                result[this._convertAttrName(attr.name)] = attr.value;
+            }
 
             result["id"] = this._getAttributeValue(originalNode, "id");
             result["classes"] = element.styles.getClasses();
+
+            console.log(result);
         }
 
         return result;
@@ -77,6 +84,18 @@ export abstract class AbstractRenderer implements IRenderer {
         for (let c of source.chidlren) {
             target.append(c);
         }
+    }
+
+    protected _convertAttrName(attrName: string): string {
+        let parts: string[] = attrName.split("-");
+        let result = parts.shift();
+
+        while (parts.length > 0) {
+            let part: string = parts.shift();
+            result += part[0].toUpperCase() + part.substr(1);
+        }
+
+        return result;
     }
 }
 

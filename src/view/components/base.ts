@@ -1,7 +1,7 @@
 
 import { ControllerBase } from "../../component"
 import { ISizer, SizerFactory, ASizer } from "../sizer/base"
-import { RenderResult } from "../../rendering"
+import { RenderResult, AbstractRenderer } from "../../rendering"
 
 
 export class VisualComponentController extends ControllerBase {
@@ -9,7 +9,7 @@ export class VisualComponentController extends ControllerBase {
 }
 
 
-export class SizeableComponent extends VisualComponentController {
+export class SizeableController extends VisualComponentController {
 
     private _sizer: ISizer;
 
@@ -36,4 +36,13 @@ export class SizeableComponent extends VisualComponentController {
         this._sizer.addEventListener(ASizer.EVENT_RESIZE, (evt) => { this.repaint(); });
     }
 
+}
+
+
+export class ContainerController extends SizeableController {
+
+}
+
+
+export abstract class ContainerRenderer extends AbstractRenderer {
 }

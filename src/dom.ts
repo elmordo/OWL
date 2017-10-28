@@ -423,6 +423,17 @@ class AttributeManager {
 
         return result;
     }
+
+    public getIterator() : CommonHtmlAttribute[] {
+        let result: CommonHtmlAttribute[] = new Array<CommonHtmlAttribute>();
+
+        for (let i = 0; i < this._attributes.length; ++i) {
+            let attr = this._attributes.item(i);
+            result.push(<CommonHtmlAttribute>this._manipulator.mapNode(attr));
+        }
+
+        return result;
+    }
 }
 
 class StyleManager {

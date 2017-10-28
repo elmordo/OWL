@@ -3,7 +3,7 @@ import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../../render
 import { ComponentFactory, ComponentDescription, registerFunctionFactory } from "../../../component"
 import { ServiceManager } from "../../../service_management"
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator } from "../../../dom"
-import { SizeableComponent } from "../base"
+import { ContainerController } from "../base"
 
 
 export class Renderer extends AbstractRenderer {
@@ -37,7 +37,7 @@ export class Renderer extends AbstractRenderer {
 }
 
 
-export class Controller extends SizeableComponent {
+export class Controller extends ContainerController {
 
     /**
      * setup the instance

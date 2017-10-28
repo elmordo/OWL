@@ -2,7 +2,7 @@ import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../.
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
 import { ComponentFactory, ComponentDescription, registerFunctionFactory, ControllerBase } from "../../../component"
-import { SizeableComponent } from "../base"
+import { ContainerController } from "../base"
 
 
 export class Renderer extends AbstractRenderer {
@@ -36,7 +36,7 @@ export class Renderer extends AbstractRenderer {
 }
 
 
-export class Controller extends SizeableComponent {
+export class Controller extends ContainerController {
 
     private _duration: number;
 
