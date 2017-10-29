@@ -16,6 +16,7 @@ export abstract class BaseBoxRenderer extends ContainerRenderer {
 
         this._setupClassNames(rootNode, options);
         this._copyContent(<CommonHtmlElement>originalNode, rootNode);
+        this._setupId(rootNode, options);
 
         let result: RenderResult = new RenderResult(rootNode, entryNodes);
         this._processRenderResult(result);
@@ -76,6 +77,7 @@ export abstract class BaseBoxItemRenderer extends AbstractRenderer {
         this._copyContent(originalNode, root);
         this._setupId(root, options);
         this._setupClassNames(root, options);
+        this._processRenderResult(result);
 
         return result;
     }
@@ -83,7 +85,7 @@ export abstract class BaseBoxItemRenderer extends AbstractRenderer {
     public getOptions(originalNode: CommonHtmlElement) : Object {
         let options = super.getOptions(originalNode);
         options["size"] = this._getAttributeValue(originalNode, "size", "auto");
-
+        console.log(options);
         return options;
     }
 

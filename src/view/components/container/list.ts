@@ -14,7 +14,6 @@ export class Renderer extends AbstractRenderer {
 
     public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
         let rootNode: CommonHtmlElement = manipulator.createNewFragment(Renderer.TEMPLATE);
-        console.log(rootNode, options);
 
         this._setupClassNames(rootNode, options);
         this._setupId(rootNode, options);

@@ -149,6 +149,9 @@ export class SliderPageRenderer extends AbstractRenderer {
         let result: RenderResult = new RenderResult(root, entries);
 
         this._copyContent(originalNode, root);
+        this._setupId(root, options);
+        this._setupClassNames(root, options);
+        this._processRenderResult(result);
 
         return result;
     }

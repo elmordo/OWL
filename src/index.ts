@@ -57,7 +57,6 @@ export class OwlWebLib {
     public run(window: Window, rootElement: HTMLElement) : void {
         this._rootElement = rootElement;
         this._application = new Application();
-        console.log(this._application);
         this._window = window;
 
         this._initialize();
