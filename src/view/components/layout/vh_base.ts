@@ -66,7 +66,7 @@ export class BaseBoxController extends ContainerController {
 
 export abstract class BaseBoxItemRenderer extends AbstractRenderer {
 
-    static TEMPLATE: string = "<div></div>";
+    static TEMPLATE: string = "<div class='owl-box-item'></div>";
 
     public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
         let root = manipulator.createNewFragment(BaseBoxItemRenderer.TEMPLATE);
