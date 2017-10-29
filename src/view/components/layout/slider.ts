@@ -18,6 +18,7 @@ export class Renderer extends AbstractRenderer {
         this._setupClassNames(rootNode, options);
 
         let result: RenderResult = new RenderResult(rootNode, entryNodes);
+        this._processRenderResult(result);
         return result;
     }
 

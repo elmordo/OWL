@@ -20,6 +20,7 @@ export class Renderer extends AbstractRenderer {
             rootNode.node.appendChild(originalNode.node.firstChild);
 
         let result: RenderResult = new RenderResult(rootNode, entryNodes);
+        this._processRenderResult(result);
         return result;
     }
 

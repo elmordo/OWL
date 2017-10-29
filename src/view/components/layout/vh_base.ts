@@ -19,6 +19,7 @@ export abstract class BaseBoxRenderer extends ContainerRenderer {
         this._copyContent(<CommonHtmlElement>originalNode, rootNode);
 
         let result: RenderResult = new RenderResult(rootNode, entryNodes);
+        this._processRenderResult(result);
         return result;
     }
 

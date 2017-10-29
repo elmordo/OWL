@@ -80,6 +80,10 @@ export abstract class AbstractRenderer implements IRenderer {
         return result;
     }
 
+    protected _processRenderResult(result: RenderResult) : void {
+        this._lastResult = result;
+    }
+
     protected _setupId(target: CommonHtmlElement, options: Object) : void {
         if (options["id"])
             target.attributes.set("id", options["id"]);

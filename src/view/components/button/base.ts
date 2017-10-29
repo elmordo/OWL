@@ -19,6 +19,7 @@ export abstract class ButtonRendererBase extends AbstractRenderer {
         this._insertButtonToWrapper(button, wrapper.entryNodes);
         this._setupLookup(button, wrapper.entryNodes);
         this._setupId(button, options);
+        this._processRenderResult(wrapper);
 
         return wrapper;
     }

@@ -16,7 +16,10 @@ export class Renderer extends AbstractRenderer {
         this._copyContent(<CommonHtmlElement>originalNode, rootNode);
         let entryNodes: EntryNodeLookup = new EntryNodeLookup();
 
-        return new RenderResult(rootNode, entryNodes);
+        let result: RenderResult = new RenderResult(rootNode, entryNodes);
+        this._processRenderResult(result);
+
+        return result;
     }
 
     public getOptions(node: CommonHtmlNode) : Object {

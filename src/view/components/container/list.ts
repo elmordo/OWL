@@ -26,7 +26,10 @@ export class Renderer extends AbstractRenderer {
         entryNodes["itemContainer"] = innerContainer;
         rootNode.append(innerContainer);
 
-        return new RenderResult(rootNode, entryNodes);
+        let result: RenderResult = new RenderResult(rootNode, entryNodes);
+        this._processRenderResult(result);
+
+        return result;
     }
 
     public getOptions(node: CommonHtmlElement) : Object {
