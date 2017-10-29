@@ -2,10 +2,10 @@ import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../.
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
 import { ComponentFactory, ComponentDescription, registerFunctionFactory, ControllerBase } from "../../../component"
-import { VisualComponentController, ContainerController } from "../base"
+import { VisualComponentController, ContainerController, ContainerRenderer } from "../base"
 
 
-export abstract class BaseBoxRenderer extends AbstractRenderer {
+export abstract class BaseBoxRenderer extends ContainerRenderer {
 
     static TEMPLATE: string = "<div></div>";
 

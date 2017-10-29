@@ -2,6 +2,7 @@
 import { ControllerBase } from "../../component"
 import { ISizer, SizerFactory, ASizer } from "../sizer/base"
 import { RenderResult, AbstractRenderer } from "../../rendering"
+import { CommonHtmlElement } from "../../dom"
 
 
 export class VisualComponentController extends ControllerBase {
@@ -45,4 +46,34 @@ export class ContainerController extends SizeableController {
 
 
 export abstract class ContainerRenderer extends AbstractRenderer {
+
+    public setLayout(layoutType: string) : void {
+        switch (layoutType) {
+            case "row":
+            break;
+
+            case "row-reverse":
+            break;
+
+            case "column":
+            break;
+
+            case "column-reverse":
+            break;
+
+            default:
+            throw new Error("Invalid layout type '" + layoutType + "'");
+        }
+    }
+
+    protected _setupLayout(target: CommonHtmlElement, options: Object) : void {
+        let layoutType = options["layout"];
+
+        if (layoutType) {
+            let mainPosition = options["layout-main"];
+            let crossPosition = options["layout-cross"];
+
+            this.setLayout(layoutType);
+        }
+    }
 }

@@ -16,6 +16,12 @@ export interface IRenderer {
     render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object): RenderResult;
 
     /**
+     * get last rendered result
+     * @return {RenderResult} last rendered result
+     */
+    getLastResult(): RenderResult;
+
+    /**
      * read options from the original node
      * @param {CommonHtmlNode} originalNode original node
      * @return {Object} parsed options
@@ -27,6 +33,12 @@ export interface IRenderer {
 export abstract class AbstractRenderer implements IRenderer {
 
     /**
+     * last rendered result
+     * @type {RenderResult}
+     */
+    protected _lastResult: RenderResult;
+
+    /**
      * render component to dom
      * @param {CommonHtmlElement} originalNode the original node
      * @param {DomManipulator} manipulator dom manipulator
@@ -34,6 +46,14 @@ export abstract class AbstractRenderer implements IRenderer {
      * @return {RenderResult} render result
      */
     abstract render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object): RenderResult;
+
+    /**
+     * get last rendered result
+     * @return {RenderResult} last rendered result
+     */
+    public getLastResult() : RenderResult {
+        return this._lastResult;
+    }
 
     /**
      * read options from the original node
@@ -48,7 +68,7 @@ export abstract class AbstractRenderer implements IRenderer {
             let attributes: CommonHtmlAttribute[] = element.attributes.getIterator();
 
             for (let attr of attributes) {
-                result[this._convertAttrName(attr.name)] = attr.value;
+                result[attr.name] = attr.value;
             }
 
             result["id"] = this._getAttributeValue(originalNode, "id");
@@ -84,18 +104,6 @@ export abstract class AbstractRenderer implements IRenderer {
         for (let c of source.chidlren) {
             target.append(c);
         }
-    }
-
-    protected _convertAttrName(attrName: string): string {
-        let parts: string[] = attrName.split("-");
-        let result = parts.shift();
-
-        while (parts.length > 0) {
-            let part: string = parts.shift();
-            result += part[0].toUpperCase() + part.substr(1);
-        }
-
-        return result;
     }
 }
 
