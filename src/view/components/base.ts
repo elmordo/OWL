@@ -47,23 +47,34 @@ export class ContainerController extends SizeableController {
 
 export abstract class ContainerRenderer extends AbstractRenderer {
 
+    protected abstract _getMainItemContainer(): CommonHtmlElement;
+
     public setLayout(layoutType: string) : void {
+        let itemContainer = this._getMainItemContainer();
+        let layoutClass: string;
+
         switch (layoutType) {
             case "row":
+            layoutClass = "owl-layout-row";
             break;
 
             case "row-reverse":
+            layoutClass = "owl-layout-rrow";
             break;
 
             case "column":
+            layoutClass = "owl-layout-column";
             break;
 
             case "column-reverse":
+            layoutClass = "owl-layout-rcolumn";
             break;
 
             default:
             throw new Error("Invalid layout type '" + layoutType + "'");
         }
+
+        itemContainer.styles.addClass(layoutClass);
     }
 
     protected _setupLayout(target: CommonHtmlElement, options: Object) : void {

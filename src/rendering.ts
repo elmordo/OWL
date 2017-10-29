@@ -73,8 +73,6 @@ export abstract class AbstractRenderer implements IRenderer {
 
             result["id"] = this._getAttributeValue(originalNode, "id");
             result["classes"] = element.styles.getClasses();
-
-            console.log(result);
         }
 
         return result;

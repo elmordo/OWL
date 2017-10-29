@@ -7,8 +7,8 @@ import { BaseBoxController, BaseBoxRenderer, BaseBoxItemRenderer, BaseBoxItemCon
 
 export class Renderer extends BaseBoxRenderer {
 
-    protected _setupContainerClasses(root: CommonHtmlElement): void {
-        root.styles.addClass("owl-vbox");
+    protected _setupContainerLayout(options: Object): void {
+        options["layout"] = "column";
     }
 }
 

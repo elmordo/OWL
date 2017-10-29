@@ -14,12 +14,14 @@ export abstract class BaseBoxRenderer extends ContainerRenderer {
         let entryNodes: EntryNodeLookup = new EntryNodeLookup();
         let originalElement = <CommonHtmlElement>originalNode;
 
-        this._setupContainerClasses(rootNode);
         this._setupClassNames(rootNode, options);
         this._copyContent(<CommonHtmlElement>originalNode, rootNode);
 
         let result: RenderResult = new RenderResult(rootNode, entryNodes);
         this._processRenderResult(result);
+
+        this.setLayout(options["layout"]);
+
         return result;
     }
 
@@ -32,10 +34,15 @@ export abstract class BaseBoxRenderer extends ContainerRenderer {
         let result: Object = super.getOptions(originalNode);
         result["sizer"] = super._getAttributeValue(<CommonHtmlElement>originalNode, "sizer", "fitParent");
 
+        this._setupContainerLayout(result);
         return result;
     }
 
-    protected abstract _setupContainerClasses(root: CommonHtmlElement): void;
+    protected _getMainItemContainer() : CommonHtmlElement {
+        return this._lastResult.rootElement;
+    }
+
+    protected abstract _setupContainerLayout(options: Object): void;
 }
 
 
