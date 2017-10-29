@@ -1,4 +1,4 @@
-import { SizerFactory, FitParent, FitWindow } from "./base"
+import { SizerFactory, FitParent, FitWindow, Auto } from "./base"
 
 
 /**
@@ -10,6 +10,7 @@ export function sizerFactory(): SizerFactory {
 
     manager.addSizer("fitParent", () => { return new FitParent(); });
     manager.addSizer("fitWindow", () => { return new FitWindow(); });
+    manager.addSizer("auto", () => { return new Auto(); });
 
     return manager;
 }

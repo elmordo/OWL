@@ -124,6 +124,13 @@ export abstract class ASizer extends EventDispatcher implements ISizer {
 }
 
 
+export class Auto extends ASizer {
+
+    public updateSize() : void {
+    }
+}
+
+
 /**
  * fit element to parent's dimension
  */
@@ -142,7 +149,7 @@ export class FitParent extends ASizer {
         let parent: HTMLElement = this._getOffsetParent();
         let element = <CommonHtmlElement>this._node;
 
-        let styles = element.styles;
+        let styles = element.styles;;
         styles.set("width", parent.clientWidth + "px");
         styles.set("height", parent.clientHeight + "px");
 

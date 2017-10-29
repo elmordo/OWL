@@ -7,7 +7,7 @@ import { VisualComponentController, ContainerController, ContainerRenderer } fro
 
 export abstract class BaseBoxRenderer extends ContainerRenderer {
 
-    static TEMPLATE: string = "<div></div>";
+    static TEMPLATE: string = "<div class='owl-layout-fill-cross'></div>";
 
     public render(originalNode: CommonHtmlNode, manipulator: DomManipulator, options: Object) : RenderResult {
         let rootNode: CommonHtmlElement = manipulator.createNewFragment(BaseBoxRenderer.TEMPLATE);
@@ -32,7 +32,7 @@ export abstract class BaseBoxRenderer extends ContainerRenderer {
      */
     public getOptions(originalNode: CommonHtmlNode): Object {
         let result: Object = super.getOptions(originalNode);
-        result["sizer"] = super._getAttributeValue(<CommonHtmlElement>originalNode, "sizer", "fitParent");
+        result["sizer"] = super._getAttributeValue(<CommonHtmlElement>originalNode, "sizer", "auto");
 
         this._setupContainerLayout(result);
         return result;
