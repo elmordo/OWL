@@ -77,7 +77,15 @@ export abstract class ContainerRenderer extends AbstractRenderer {
         itemContainer.styles.addClass(layoutClass);
     }
 
-    protected _setupLayout(target: CommonHtmlElement, options: Object) : void {
+    public setMainPosition(position: string) : void {
+        this._setPositionClass(position, "main");
+    }
+
+    public setCrossPosition(position: string) : void {
+        this._setPositionClass(position, "cross");
+    }
+
+    protected _setupLayout(options: Object) : void {
         let layoutType = options["layout"];
 
         if (layoutType) {
@@ -85,6 +93,19 @@ export abstract class ContainerRenderer extends AbstractRenderer {
             let crossPosition = options["layout-cross"];
 
             this.setLayout(layoutType);
+
+            if (mainPosition) this.setMainPosition(mainPosition);
+            if (crossPosition) this.setCrossPosition(crossPosition);
         }
+    }
+
+    protected _setPositionClass(positionType: string, direction: string) : void {
+        let target: CommonHtmlElement = this._getMainItemContainer();
+        let className: string = this._getPositionBaseClassName(direction, positionType);
+        target.styles.addClass(className);
+    }
+
+    protected _getPositionBaseClassName(direction: string, positionType: string) : string {
+        return "owl-layout-position-" + direction + "-" + positionType;
     }
 }

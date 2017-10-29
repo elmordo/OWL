@@ -9,6 +9,7 @@ html { overflow: hidden; }
 .owl-hpadding-30 { padding-left: 30px; padding-right: 30px; }
 
 .owl-align-right>* { right: 0; text-align: right; margin-left: auto; }
+.owl-auto-margin { margin: auto; }
 
 .owl-viewport { left: 0px; top: 0px; }
 
@@ -23,7 +24,16 @@ html { overflow: hidden; }
 .owl-layout-column>*, .owl-layout-rcolumn>* { flex: auto; width: 100%; position: relative; }
 .owl-layout-column>.owl-box-size-content, .owl-layout-rcolumn>.owl-box-size-content { flex: initial; height: auto; }
 
-.owl-layout-row>*, .owl-layout-rrow>* { flex: auto; height: 100%; height: -webkit-fill-available; position: relative; flex-grow: 1; flex-basis: 50%; }
+.owl-layout-row>*, .owl-layout-rrow>* { flex: auto; position: relative; }
+.owl-layout-row>.owl-box-size-content, .owl-layout-rrow>.owl-box-size-content { flex: initial; height: auto; }
+
+.owl-layout-position-main-start { justify-content: start; }
+.owl-layout-position-main-center { justify-content: center; }
+.owl-layout-position-main-end { justify-content: end; }
+
+.owl-layout-position-cross-start { align-items: start; }
+.owl-layout-position-cross-center { align-items: center; }
+.owl-layout-position-cross-end { align-items: end; }
 
 .owl-floating-box { position: absolute; }
 

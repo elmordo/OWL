@@ -21,7 +21,7 @@ export class Controller extends BaseBoxController {
 export class BoxItemRenderer extends BaseBoxItemRenderer {
 
     protected _setupContainerClasses(root: CommonHtmlElement): void {
-        root.styles.addClass("owl-vbox-item");
+        //root.styles.addClass("owl-vbox-item");
     }
 }
 

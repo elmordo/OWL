@@ -20,7 +20,7 @@ export abstract class BaseBoxRenderer extends ContainerRenderer {
         let result: RenderResult = new RenderResult(rootNode, entryNodes);
         this._processRenderResult(result);
 
-        this.setLayout(options["layout"]);
+        this._setupLayout(options);
 
         return result;
     }
