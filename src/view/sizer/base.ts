@@ -165,6 +165,8 @@ export class FitParent extends ASizer {
         super.setup(node, options);
         this._callback = () => { this.updateSize() };
 
+        (<CommonHtmlElement>node).styles.addClass("owl-sizer-fitparent");
+
         window.addEventListener("resize", this._callback);
     }
 
