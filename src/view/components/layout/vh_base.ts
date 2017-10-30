@@ -56,6 +56,7 @@ export class BaseBoxController extends ContainerController {
     protected _onTracked(evt: CustomEvent) : void {
         let senderController: ControllerBase = <ControllerBase>evt.detail;
         senderController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
+            console.log("prdel");
             this.repaint();
         });
 

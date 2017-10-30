@@ -2,7 +2,7 @@ import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../.
 import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
 import { ComponentFactory, ComponentDescription, registerFunctionFactory, ControllerBase } from "../../../component"
-import { ContainerController } from "../base"
+import { ContainerController, SizeableController } from "../base"
 
 
 export class Renderer extends AbstractRenderer {
@@ -159,13 +159,14 @@ export class SliderPageRenderer extends AbstractRenderer {
     public getOptions(rootNode: CommonHtmlElement) : Object {
         let result = super.getOptions(rootNode);
         result["name"] = this._getAttributeValue(rootNode, "name", null);
+        result["sizer"] = "fitParent";
 
         return result;
     }
 }
 
 
-export class SliderPageController extends ControllerBase {
+export class SliderPageController extends SizeableController {
 
     private _pageName: string;
 
