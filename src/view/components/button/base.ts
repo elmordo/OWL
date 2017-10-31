@@ -3,6 +3,7 @@ import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../../render
 import { DomManipulator, CommonHtmlNode, CommonHtmlText, CommonHtmlElement } from "../../../dom"
 import { ControllerBase, ComponentFactory, ComponentDescription } from "../../../component"
 import { ServiceManager, ServiceNamespace } from "../../../service_management"
+import { VisualComponentController } from "../base"
 
 
 export abstract class ButtonRendererBase extends AbstractRenderer {
@@ -55,7 +56,7 @@ export abstract class ButtonRendererBase extends AbstractRenderer {
 }
 
 
-export class ButtonController extends ControllerBase {
+export class ButtonController extends VisualComponentController {
 
     private _label: CommonHtmlText;
 

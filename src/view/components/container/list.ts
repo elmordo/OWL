@@ -3,6 +3,7 @@ import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../../render
 import { DomManipulator, CommonHtmlNode, CommonHtmlText, CommonHtmlElement } from "../../../dom"
 import { ControllerBase, ComponentFactory, registerFunctionFactory } from "../../../component"
 import { ServiceManager, ServiceNamespace } from "../../../service_management"
+import { VisualComponentController } from "../base"
 
 
 export class Renderer extends AbstractRenderer {
@@ -89,7 +90,7 @@ export class ItemRenderer extends AbstractRenderer {
 }
 
 
-export class ItemController extends ControllerBase {
+export class ItemController extends VisualComponentController {
 
     public setup(renderedContent: RenderResult, options: Object) {
         super.setup(renderedContent, options);

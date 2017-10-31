@@ -41,6 +41,8 @@ html { overflow: hidden; }
 .owl-list-item { padding: 15px 20px; border: 2px solid #ddd; border-bottom-width: 0; border-left-width: 1px; border-right-width: 1px; }
 .owl-list-item:last-child { border-bottom-width: 2px; }
 
+.owl-hidden { display: none; }
+
 .owl-width-100p { width: 100%; }
 .owl-width-90p { width: 90%; }
 .owl-width-80p { width: 80%; }

@@ -7,6 +7,9 @@ import { CommonHtmlElement } from "../../dom"
 
 export class VisualComponentController extends ControllerBase {
 
+    public getSupportedEvents(): string[] {
+        return ["click", "mouseenter"];
+    }
 }
 
 
@@ -27,6 +30,8 @@ export class SizeableController extends VisualComponentController {
 
     public _setupSizer(options: Object) : void {
         let sizerType: string = options["sizer"];
+        if (!sizerType) sizerType = "auto";
+
         let sizerFactory: SizerFactory = <SizerFactory>this.serviceManager.getServiceByPath("owl.sizerFactory");
         let sizer = sizerFactory.getSizer(sizerType);
 

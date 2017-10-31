@@ -462,6 +462,10 @@ export class ControllerBase extends EventDispatcher {
         this._sizeWatchdog.watch();
     }
 
+    public getSupportedEvents(): string[] {
+        return [];
+    }
+
     /**
      * dispatch local OWL event (event has not origin in real DOM)
      * @param {string} eventType event type
@@ -492,7 +496,7 @@ export class ControllerBase extends EventDispatcher {
      */
     private _setupGateway() : void {
         this._domEventGateway = new DomEventGateway(this);
-        this._domEventGateway.listenForEnumeratedEvents(this.supportedEvents);
+        this._domEventGateway.listenForEnumeratedEvents(this.getSupportedEvents());
     }
 
     /**
@@ -591,10 +595,6 @@ export class ControllerBase extends EventDispatcher {
         this._renderer = val;
     }
 
-    get supportedEvents(): string[] {
-        return ["click"];
-    }
-
     get controllerManager(): ControllerManager {
         return this._controllerManager;
     }
@@ -661,7 +661,8 @@ export function bindStaticEvents(controller: ControllerBase, originalNode: HTMLE
         if (isStaticEvent(attr)) {
             let eventType = getStaticEventType(attr);
             let expr = attr.value;
-            controller.addEventListener(eventType, createStaticEventHandler(expr, controller));
+            let handler = createStaticEventHandler(expr, controller);
+            controller.addEventListener(eventType, handler);
         }
     }
 }

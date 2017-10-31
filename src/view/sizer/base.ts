@@ -149,8 +149,6 @@ export class FitParent extends ASizer {
         let parent: HTMLElement = this._getOffsetParent();
         let element = <CommonHtmlElement>this._node;
 
-        console.log(element.element);
-
         let styles = element.styles;;
         styles.set("width", parent.clientWidth + "px");
         styles.set("height", parent.clientHeight + "px");

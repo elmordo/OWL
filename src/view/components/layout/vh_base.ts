@@ -86,7 +86,6 @@ export abstract class BaseBoxItemRenderer extends AbstractRenderer {
     public getOptions(originalNode: CommonHtmlElement) : Object {
         let options = super.getOptions(originalNode);
         options["size"] = this._getAttributeValue(originalNode, "size", "auto");
-        console.log(options);
         return options;
     }
 
