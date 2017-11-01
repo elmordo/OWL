@@ -64,7 +64,6 @@ export class Controller extends DynamicSizeController {
     }
 
     public repaint() : void {
-        console.log(this);
         if (!this.parent) return;
 
         this._resolveVerticalPosition();
@@ -74,7 +73,6 @@ export class Controller extends DynamicSizeController {
     }
 
     public initialize() : void {
-        console.log("prdel");
         super.initialize();
     }
 

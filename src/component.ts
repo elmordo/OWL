@@ -452,6 +452,7 @@ export class ControllerBase extends EventDispatcher {
      */
     public initialize() : void {
         this._dispatchTrackingSignal();
+        this.repaint();
     }
 
     /**

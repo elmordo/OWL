@@ -15,6 +15,22 @@ export class VisualComponentController extends ControllerBase {
 
 export class DynamicSizeController extends VisualComponentController {
 
+    protected _onTracked(evt: CustomEvent): void {
+        this.repaint();
+        this._bindResizeEventListener(evt.detail);
+    }
+
+    protected _onTrackingReceived(evt: CustomEvent): void {
+        this.repaint();
+        this._bindResizeEventListener(evt.detail);
+    }
+
+    private _bindResizeEventListener(observedController: ControllerBase) : void {
+        observedController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
+            this.repaint();
+        });
+    }
+
 }
 
 
@@ -50,22 +66,6 @@ export class SizeableController extends DynamicSizeController {
 
 
 export class ContainerController extends SizeableController {
-
-    protected _onTracked(evt: CustomEvent): void {
-        this.repaint();
-        this._bindResizeEventListener(evt.detail);
-    }
-
-    protected _onTrackingReceived(evt: CustomEvent): void {
-        this.repaint();
-        this._bindResizeEventListener(evt.detail);
-    }
-
-    private _bindResizeEventListener(observedController: ControllerBase) : void {
-        observedController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
-            this.repaint();
-        });
-    }
 
 }
 
