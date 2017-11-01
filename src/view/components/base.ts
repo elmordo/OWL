@@ -25,7 +25,6 @@ export class SizeableController extends VisualComponentController {
     public repaint() : void {
         this._sizer.updateSize();
         super.repaint();
-        this._dispatchLocalEvent(ControllerBase.EVENT_RESIZE);
     }
 
     public _setupSizer(options: Object) : void {
@@ -40,6 +39,22 @@ export class SizeableController extends VisualComponentController {
         this._sizer.updateSize();
 
         this._sizer.addEventListener(ASizer.EVENT_RESIZE, (evt) => { this.repaint(); });
+    }
+
+    protected _onTracked(evt: CustomEvent): void {
+        this.repaint();
+        this._bindResizeEventListener(evt.detail);
+    }
+
+    protected _onTrackingReceived(evt: CustomEvent): void {
+        this.repaint();
+        this._bindResizeEventListener(evt.detail);
+    }
+
+    private _bindResizeEventListener(observedController: ControllerBase) : void {
+        observedController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
+            this.repaint();
+        });
     }
 
 }

@@ -150,7 +150,7 @@ export class FitParent extends ASizer {
         let element = <CommonHtmlElement>this._node;
 
         let styles = element.styles;;
-        styles.set("width", parent.clientWidth + "px");
+        //styles.set("width", parent.clientWidth + "px");
         styles.set("height", parent.clientHeight + "px");
 
         this._dispatchResizeEventIfChanged(parent.clientWidth, parent.clientHeight);

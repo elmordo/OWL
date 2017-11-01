@@ -71,16 +71,6 @@ export class Controller extends ControllerBase {
         super.repaint();
     }
 
-    protected _onTracked(evt: CustomEvent): void {
-        this.repaint();
-        this._bindResizeEventListener(evt.detail);
-    }
-
-    protected _onTrackingReceived(evt: CustomEvent): void {
-        this.repaint();
-        this._bindResizeEventListener(evt.detail);
-    }
-
     protected _resolveVerticalPosition(): void {
         if (this._verticalAlign != null) {
             let position = this._getMiddlePositionInContainer("height");
@@ -112,12 +102,6 @@ export class Controller extends ControllerBase {
 
     protected _calculateMiddlePosition(containerSize: number, contentSize: number): number {
         return (containerSize - contentSize) / 2
-    }
-
-    private _bindResizeEventListener(observedController: ControllerBase) : void {
-        observedController.addEventListener(ControllerBase.EVENT_RESIZE, () => {
-            this.repaint();
-        });
     }
 }
 

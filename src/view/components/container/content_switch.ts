@@ -46,6 +46,7 @@ export class Controller extends SizeableController {
             this._activeItem.hide();
 
         item.show();
+        item.repaint();
         this._activeItem = item;
     }
 
@@ -112,6 +113,11 @@ export class ItemController extends SizeableController {
     public setup(renderedContent: RenderResult, options: Object) {
         super.setup(renderedContent, options);
         this._name = options["name"] || null;
+    }
+
+    public repaint() : void {
+        super.repaint();
+        console.log("repaint");
     }
 
     public hide() : void {
