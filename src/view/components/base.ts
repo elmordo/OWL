@@ -13,7 +13,12 @@ export class VisualComponentController extends ControllerBase {
 }
 
 
-export class SizeableController extends VisualComponentController {
+export class DynamicSizeController extends VisualComponentController {
+
+}
+
+
+export class SizeableController extends DynamicSizeController {
 
     private _sizer: ISizer;
 
@@ -41,6 +46,11 @@ export class SizeableController extends VisualComponentController {
         this._sizer.addEventListener(ASizer.EVENT_RESIZE, (evt) => { this.repaint(); });
     }
 
+}
+
+
+export class ContainerController extends SizeableController {
+
     protected _onTracked(evt: CustomEvent): void {
         this.repaint();
         this._bindResizeEventListener(evt.detail);
@@ -56,11 +66,6 @@ export class SizeableController extends VisualComponentController {
             this.repaint();
         });
     }
-
-}
-
-
-export class ContainerController extends SizeableController {
 
 }
 

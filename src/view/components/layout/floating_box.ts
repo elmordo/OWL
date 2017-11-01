@@ -3,6 +3,7 @@ import { AbstractRenderer, RenderResult, EntryNodeLookup } from "../../../render
 import { DomManipulator, CommonHtmlNode, CommonHtmlText, CommonHtmlElement } from "../../../dom"
 import { ControllerBase, ComponentFactory, registerFunctionFactory } from "../../../component"
 import { ServiceManager, ServiceNamespace } from "../../../service_management"
+import { DynamicSizeController } from "../base"
 
 
 export class Renderer extends AbstractRenderer {
@@ -37,7 +38,7 @@ export class Renderer extends AbstractRenderer {
 }
 
 
-export class Controller extends ControllerBase {
+export class Controller extends DynamicSizeController {
 
     protected _verticalAlign: string;
 
@@ -63,12 +64,18 @@ export class Controller extends ControllerBase {
     }
 
     public repaint() : void {
+        console.log(this);
         if (!this.parent) return;
 
         this._resolveVerticalPosition();
         this._resolveHorizontalPosition();
 
         super.repaint();
+    }
+
+    public initialize() : void {
+        console.log("prdel");
+        super.initialize();
     }
 
     protected _resolveVerticalPosition(): void {
