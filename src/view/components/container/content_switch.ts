@@ -113,7 +113,6 @@ export class ItemController extends SizeableController {
     public setup(renderedContent: RenderResult, options: Object) {
         super.setup(renderedContent, options);
         this._name = options["name"] || null;
-        console.log(this);
     }
 
     public repaint() : void {

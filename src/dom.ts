@@ -545,6 +545,10 @@ export class CommonHtmlElement extends CommonHtmlNode {
         return new Size(this.element.offsetWidth, this.element.offsetHeight);
     }
 
+    get position(): Position {
+        return new Position(this.element.offsetLeft, this.element.offsetTop);
+    }
+
     get element(): HTMLElement {
         return <HTMLElement>this.node;
     }
@@ -709,6 +713,19 @@ export class CommonNodeList extends Array<CommonHtmlNode> {
         if (this.length == 0)
             throw new Error("The list is empty");
         return this[this.length - 1];
+    }
+}
+
+
+export class Position {
+
+    public x: number;
+
+    public y: number;
+
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
     }
 }
 

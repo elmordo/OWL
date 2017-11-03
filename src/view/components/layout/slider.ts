@@ -1,8 +1,8 @@
 import { AbstractRenderer, IRenderer, RenderResult, EntryNodeLookup } from "../../../rendering"
-import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList } from "../../../dom"
+import { CommonHtmlNode, CommonHtmlElement, DomManipulator, CommonNodeList, Size } from "../../../dom"
 import { ServiceManager } from "../../../service_management"
 import { ComponentFactory, ComponentDescription, registerFunctionFactory, ControllerBase } from "../../../component"
-import { ContainerController, SizeableController } from "../base"
+import { ContainerController, SizeableController, VisualComponentController } from "../base"
 
 
 export class Renderer extends AbstractRenderer {
@@ -146,6 +146,7 @@ export class SliderPageRenderer extends AbstractRenderer {
     public render(originalNode: CommonHtmlElement, manipulator: DomManipulator, options: Object) : RenderResult {
         let root = manipulator.createNewFragment(SliderPageRenderer.TEMPLATE);
         let entries = new EntryNodeLookup();
+        entries["content"] = root;
         let result: RenderResult = new RenderResult(root, entries);
 
         this._copyContent(originalNode, root);
@@ -166,18 +167,46 @@ export class SliderPageRenderer extends AbstractRenderer {
 }
 
 
-export class SliderPageController extends SizeableController {
+export class SliderPageController extends VisualComponentController {
 
     private _pageName: string;
+
+    private _overflowBehaviour: string = "hidden";
+
+    public repaint() : void {
+        if (this._overflowBehaviour == "expand")
+            (<CommonHtmlElement>this._view.entryNodes["content"]).styles.addClass("owl-overflow-expand");
+
+        super.repaint();
+    }
 
     public setup(renderedContent: RenderResult, options: Object) : void {
         super.setup(renderedContent, options);
         this._pageName = options["name"];
+        this._overflowBehaviour = options["overflow"] ? options["overflow"] : "hidden";
     }
 
     protected _onTracked(evt: CustomEvent) : void {
         let controller: ControllerBase = <ControllerBase>evt.detail;
         controller.addEventListener(ControllerBase.EVENT_RESIZE, (evt) => { this.repaint(); });
+    }
+
+    private _getContentSize() : Size {
+        let width: number = 0, height: number = 0;
+        let root: CommonHtmlElement = <any>this._view.entryNodes["content"];
+
+        root.chidlren.forEach((child: any) => {
+            if (child instanceof CommonHtmlElement) {
+                let element: CommonHtmlElement = <any>child;
+                let maxX: number = element.size.width + element.position.x;
+                let maxY: number = element.size.height + element.position.y;
+
+                if (width < maxX) width = maxX;
+                if (height < maxY) height = maxY;
+            }
+        });
+
+        return new Size(width, height);
     }
 
     get pageName(): string {
@@ -186,6 +215,10 @@ export class SliderPageController extends SizeableController {
 
     set pageName(val: string) {
         this._pageName = val;
+    }
+
+    get overflowBehaviour(): string {
+        return this._overflowBehaviour;
     }
 }
 
