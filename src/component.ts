@@ -254,7 +254,14 @@ export class ComponentInserter {
      */
     public insertComponents() : void {
         let walker: TreeWalker = this._createWalker();
-        let currentNode:Node = walker.nextNode();
+        let currentNode:Node = null;
+
+        try {
+             currentNode = walker.nextNode();
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
 
         while(currentNode) {
             let nodeToProcess: Node = currentNode;
@@ -282,7 +289,7 @@ export class ComponentInserter {
                 return (element.tagName.substr(0, 4) == "OWL:") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
             }
         };
-        return document.createTreeWalker(this._rootElement, NodeFilter.SHOW_ELEMENT, filter);
+        return document.createTreeWalker(this._rootElement, NodeFilter.SHOW_ELEMENT, filter, false);
     }
 
     /**
