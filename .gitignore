@@ -9,4 +9,5 @@ node_modules
 *.js.map
 index.js
 !dist
+package-lock.json
 

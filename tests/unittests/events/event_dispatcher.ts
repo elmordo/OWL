@@ -1,4 +1,4 @@
-import { EventDispatcher, Event } from "../../../src/events";
+import { EventDispatcher, OwlEvent } from "../../../src/events";
 import { expect } from "chai";
 
 
@@ -18,7 +18,7 @@ describe("EventDispatcher class", () => {
 
         let resolver: Function = addSimpleListener(dispatcher, eventType);
 
-        let event: Event = new Event(eventType);
+        let event: OwlEvent = new OwlEvent(eventType);
         dispatcher.dispatchEvent(event);
 
         resolver(true);
@@ -31,7 +31,7 @@ describe("EventDispatcher class", () => {
         let resolver1 = addSimpleListener(dispatcher, eventType);
         let resolver2 = addSimpleListener(dispatcher, eventType);
 
-        let event: Event = new Event(eventType);
+        let event: OwlEvent = new OwlEvent(eventType);
         dispatcher.dispatchEvent(event);
 
         resolver1(true);
@@ -43,7 +43,7 @@ describe("EventDispatcher class", () => {
         let eventType: string = "myEvent";
         let resolver = addSimpleListener(dispatcher, "notMyEvent");
 
-        let event: Event = new Event(eventType);
+        let event: OwlEvent = new OwlEvent(eventType);
         dispatcher.dispatchEvent(event);
 
         resolver(false);
@@ -57,7 +57,7 @@ describe("EventDispatcher class", () => {
         let resolver2 = addSimpleListener(dispatcher, eventType);
         let resolver3 = addSimpleListener(dispatcher, "notMyEvent");
 
-        let event: Event = new Event(eventType);
+        let event: OwlEvent = new OwlEvent(eventType);
         dispatcher.dispatchEvent(event);
 
         resolver1(true);
@@ -68,7 +68,7 @@ describe("EventDispatcher class", () => {
     it("Event chain", () => {
         let dispatcher = new EventDispatcher();
         let eventType1 = "firstEvent", eventType2 = "secondEvent";
-        let event1 = new Event(eventType1), event2 = new Event(eventType2);
+        let event1 = new OwlEvent(eventType1), event2 = new OwlEvent(eventType2);
 
         let counter: number = 1;
         let firstEventOrder = 0, secondEventOrder = 0;
